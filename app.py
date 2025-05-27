@@ -81,17 +81,17 @@ def get_trend_arrow(start_price, end_price):
     change_percent = ((end_price - start_price) / start_price) * 100
     
     if change_percent > 2:
-        return "🟢 ↗️"  # Strong up (45° up right)
+        return f"🟢 ⬆️ ({change_percent:.1f}%)"  # Strong up (45° up right)
     elif change_percent > 0.5:
-        return "🟢 ↑"   # Up
+        return f"🟢 ↗️ ({change_percent:.1f}%)"   # Up
     elif change_percent > -0.5:
-        return "⚪ →"   # Sideways (gray)
+        return f"⚪ → ({change_percent:.1f}%)"   # Sideways (gray)
     elif change_percent > -2:
-        return "🔴 ↓"   # Down
+        return f"🔴 ↘️ ({change_percent:.1f}%)"   # Down
     else:
-        return "🔴 ↘️"  # Strong down (45° down right)
+        return f"🔴 ⬇️ ({change_percent:.1f}%)"  # Strong down (45° down right)
 
-def simulate_grid_trading(prices, grid_spacing_percent=0.1):
+def simulate_grid_trading(prices, grid_spacing_percent=0.1, coin_rank=None):
     prices = np.array(prices)
     min_price = prices.min()
     max_price = prices.max()
@@ -123,6 +123,7 @@ def simulate_grid_trading(prices, grid_spacing_percent=0.1):
             del active_orders[bl]
 
     return {
+        "rank": coin_rank,
         "trend": trend_arrow,
         "trades": trades,
         "min": float(min_price),
@@ -134,7 +135,14 @@ def simulate_grid_trading(prices, grid_spacing_percent=0.1):
 
 def load_and_simulate(file, grid_spacing_percent=0.1):
     data = json.load(file)
-    results = {coin: simulate_grid_trading(prices, grid_spacing_percent) for coin, prices in data.items()}
+    results = {}
+    for coin, prices in data.items():
+        if coin in coin_list:
+            rank = coin_list.index(coin) + 1  # 1-based ranking
+            results[coin] = simulate_grid_trading(prices, grid_spacing_percent, rank)
+        else:
+            results[coin] = simulate_grid_trading(prices, grid_spacing_percent, None)
+    
     sorted_results = dict(sorted(results.items(), key=lambda item: item[1]['trades'], reverse=True))
     df = pd.DataFrame.from_dict(sorted_results, orient='index')
     df.index.name = 'Coin'
@@ -154,6 +162,16 @@ grid_spacing = st.slider(
     help="Select the grid spacing percentage (0.1% to 2.0%)"
 )
 
+# Add coin limit slider
+max_coins_to_show = st.slider(
+    "Number of coins to display",
+    min_value=5,
+    max_value=len(coin_list),
+    value=20,
+    step=5,
+    help=f"Select how many coins to display (max: {len(coin_list)})"
+)
+
 json_path = Path("top_20_klines.json")
 
 if not json_path.exists():
@@ -168,4 +186,6 @@ if st.button("(Re)Generate JSON Data from Binance"):
 if json_path.exists():
     with open(json_path, "r") as f:
         df = load_and_simulate(f, grid_spacing)
-        st.dataframe(df)
+        # Filter by original rank (market cap ranking) - show only coins with rank 1 to max_coins_to_show
+        df_filtered = df[df['rank'] <= max_coins_to_show]
+        st.dataframe(df_filtered)
