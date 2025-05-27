@@ -9,11 +9,14 @@ import requests
 # --- JSON generation logic from uploaded file ---
 
 coin_list = [
-    'BTC', 'ETH', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'TRX',
-'SUI', 'LINK', 'AVAX', 'XLM', 'DOT', 'MATIC', 'WBTC', 'LTC', 'BCH',
-'UNI', 'ATOM', 'ETC', 'ICP', 'FIL', 'HBAR', 'APT', 'IMX',  'NEAR',
-'ARB', 'OP', 'QNT', 'VET', 'ALGO', 'GRT', 'FTM', 'MKR', 'EGLD', 'AAVE',
-'XMR', 'RNDR', 'INJ', 'STX', 'XTZ', 'THETA', 'SAND', 'EOS', 'WLD'
+    'BTC','ETH','XRP','BNB','SOL','DOGE','ADA','TRX','HYPE','SUI','LINK','AVAX','XLM','SHIB','BCH','LEO','HBAR','TON','DOT','LTC','BGB','UNI','TRUMP','PEPE','NEAR','MNT','OM','ALGO','OKB','KAS','TAO','FET','FIL','ARB','ENA','BONK','ICP','APT','MATIC','WTRX','WLD','ETC','XMR','IMX','VET','INJ','RNDR','QNT','MKR','RUNE','LDO','TWT','GRT','AAVE','FLOW','AXS','SAND','THETA','EGLD','FTM','DYDX','ZEC','NEO','CHZ','KLAY','CRV','BAT','1INCH','ENJ','CELO','SNX','COMP','YFI','ZIL','IOST','OMG','NANO','SC','BTT','ZEN','ONT','DGB','ICX','WAVES','STORJ','KNC','ANKR','CVC','REQ','LRC','NMR','BAL','OCEAN','BNT','REN','SXP','SKL','CKB','RSR','ELF','COTI','CTSI','PUNDIX','STMX','ARDR','STRAX' 
+
+
+    # 'BTC', 'ETH', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'TRX',
+    # 'SUI', 'LINK', 'AVAX', 'XLM', 'DOT', 'MATIC', 'WBTC', 'LTC', 'BCH',
+    # 'UNI', 'ATOM', 'ETC', 'ICP', 'FIL', 'HBAR', 'APT', 'IMX',  'NEAR',
+    # 'ARB', 'OP', 'QNT', 'VET', 'ALGO', 'GRT', 'FTM', 'MKR', 'EGLD', 'AAVE',
+    # 'INJ', 'STX', 'XTZ', 'THETA', 'SAND', 'WLD'
 ]
 # coin_list = [
 #     'BTC', 'ETH', 'BNB', 'XRP', 'ADA', 'SOL', 'DOGE', 'DOT', 'SHIB', 'LTC',
@@ -27,7 +30,12 @@ def fetch_klines(symbol):
         'interval': '1m',
         'limit': 1440
     }
-    response = requests.get(url, params=params)
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "X-MBX-APIKEY": "8ItH7L1AJXTkWGOkKHiXYd8AyROt42kHkCIMhXVePi8l1jiDGNco0Wjq8ntEubRB"
+    }
+
+    response = requests.get(url, params=params, headers=headers)
     response.raise_for_status()
     klines_data = response.json()
     average_prices = [(float(k[2]) + float(k[3])) / 2 for k in klines_data]  # avg(high, low)
@@ -35,21 +43,64 @@ def fetch_klines(symbol):
 
 def generate_json(filepath):
     data = {}
-    for coin in coin_list:
+    total_coins = len(coin_list)
+    success_count = 0
+    error_count = 0
+    
+    # Create progress bar and status text
+    progress_bar = st.progress(0)
+    status_text = st.empty()
+    
+    for i, coin in enumerate(coin_list):
+        current_progress = i + 1
+        
+        # Update status text
+        status_text.text(f"{current_progress} / {total_coins}     {success_count} success  {error_count} error")
+        
         try:
             data[coin] = fetch_klines(coin)
+            success_count += 1
         except Exception as e:
-            st.warning(f"Failed to fetch {coin}: {e}")
+            # Silently ignore failed requests
+            error_count += 1
+            pass
+        
+        # Update progress bar
+        progress_bar.progress(current_progress / total_coins)
+    
+    # Final status update
+    status_text.text(f"{total_coins} / {total_coins}     {success_count} success  {error_count} error - Complete!")
+    
     with open(filepath, "w") as f:
         json.dump(data, f)
     return filepath
 
 # --- Grid Trading Simulation ---
+def get_trend_arrow(start_price, end_price):
+    """Return colored arrow based on price trend"""
+    change_percent = ((end_price - start_price) / start_price) * 100
+    
+    if change_percent > 2:
+        return "🟢 ↗️"  # Strong up (45° up right)
+    elif change_percent > 0.5:
+        return "🟢 ↑"   # Up
+    elif change_percent > -0.5:
+        return "⚪ →"   # Sideways (gray)
+    elif change_percent > -2:
+        return "🔴 ↓"   # Down
+    else:
+        return "🔴 ↘️"  # Strong down (45° down right)
+
 def simulate_grid_trading(prices, grid_spacing_percent=0.1):
     prices = np.array(prices)
     min_price = prices.min()
     max_price = prices.max()
     avg_price = prices.mean()
+    
+    # Calculate trend
+    start_price = prices[0]
+    end_price = prices[-1]
+    trend_arrow = get_trend_arrow(start_price, end_price)
 
     grid_spacing = grid_spacing_percent / 100.0
     num_lines = int(np.floor((max_price - min_price) / (min_price * grid_spacing)))
@@ -72,6 +123,7 @@ def simulate_grid_trading(prices, grid_spacing_percent=0.1):
             del active_orders[bl]
 
     return {
+        "trend": trend_arrow,
         "trades": trades,
         "min": float(min_price),
         "max": float(max_price),
