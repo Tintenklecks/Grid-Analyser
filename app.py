@@ -5,23 +5,18 @@ import streamlit as st
 import os
 from pathlib import Path
 import requests
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # --- JSON generation logic from uploaded file ---
 
 coin_list = [
-    'BTC','ETH','XRP','BNB','SOL','DOGE','ADA','TRX','HYPE','SUI','LINK','AVAX','XLM','SHIB','BCH','LEO','HBAR','TON','DOT','LTC','BGB','UNI','TRUMP','PEPE','NEAR','MNT','OM','ALGO','OKB','KAS','TAO','FET','FIL','ARB','ENA','BONK','ICP','APT','MATIC','WTRX','WLD','ETC','IMX','VET','INJ','QNT','MKR','RUNE','LDO','TWT','GRT','AAVE','FLOW','AXS','SAND','THETA','EGLD','FTM','DYDX','ZEC','NEO','CHZ','KLAY','CRV','BAT','1INCH','ENJ','CELO','SNX','COMP','YFI','ZIL','IOST','OMG','NANO','SC','BTT','ZEN','ONT','DGB','ICX','WAVES','STORJ','KNC','ANKR','CVC','REQ','LRC','NMR','BAL','OCEAN','BNT','REN','SXP','SKL','CKB','RSR','ELF','COTI','CTSI','PUNDIX','STMX','ARDR','STRAX' 
+    'BTC','ETH','XRP','BNB','SOL','DOGE','ADA','TRX','SUI','LINK','AVAX','XLM','SHIB','BCH','HBAR','TON','DOT','LTC','UNI','TRUMP','PEPE','NEAR','OM','ALGO','TAO','FET','FIL','ARB','ENA','BONK','ICP','APT','MATIC','WLD','ETC','IMX','VET','INJ','QNT','MKR','RUNE','LDO','TWT','GRT','AAVE','FLOW','AXS','SAND','THETA','EGLD','FTM','DYDX','ZEC','NEO','CHZ','KLAY','CRV','BAT','1INCH','ENJ','CELO','SNX','COMP','YFI','ZIL','IOST','OMG','NANO','SC','BTT','ZEN','ONT','DGB','ICX','WAVES','STORJ','KNC','ANKR','CVC','REQ','LRC','NMR','BAL','OCEAN','BNT','REN','SXP','SKL','CKB','RSR','ELF','COTI','CTSI','PUNDIX','STMX','ARDR','STRAX' 
 
 
-    # 'BTC', 'ETH', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'TRX',
-    # 'SUI', 'LINK', 'AVAX', 'XLM', 'DOT', 'MATIC', 'WBTC', 'LTC', 'BCH',
-    # 'UNI', 'ATOM', 'ETC', 'ICP', 'FIL', 'HBAR', 'APT', 'IMX',  'NEAR',
-    # 'ARB', 'OP', 'QNT', 'VET', 'ALGO', 'GRT', 'FTM', 'MKR', 'EGLD', 'AAVE',
-    # 'INJ', 'STX', 'XTZ', 'THETA', 'SAND', 'WLD'
 ]
-# coin_list = [
-#     'BTC', 'ETH', 'BNB', 'XRP', 'ADA', 'SOL', 'DOGE', 'DOT', 'SHIB', 'LTC',
-#     'LINK', 'AVAX', 'UNI', 'XLM', 'VET', 'TRX', 'XMR', 'EOS', 'XTZ', 'FIL', 'WLD'
-# ]
 
 def fetch_klines(symbol):
     url = 'https://api.binance.com/api/v3/klines'
@@ -32,7 +27,7 @@ def fetch_klines(symbol):
     }
     headers = {
         "User-Agent": "Mozilla/5.0",
-        "X-MBX-APIKEY": "8ItH7L1AJXTkWGOkKHiXYd8AyROt42kHkCIMhXVePi8l1jiDGNco0Wjq8ntEubRB"
+        "X-MBX-APIKEY": os.getenv('BINANCE_API_KEY')
     }
 
     response = requests.get(url, params=params, headers=headers)
@@ -46,6 +41,7 @@ def generate_json(filepath):
     total_coins = len(coin_list)
     success_count = 0
     error_count = 0
+    failed_coins = []
     
     # Create progress bar and status text
     progress_bar = st.progress(0)
@@ -61,8 +57,9 @@ def generate_json(filepath):
             data[coin] = fetch_klines(coin)
             success_count += 1
         except Exception as e:
-            # Silently ignore failed requests
+            # Track failed coins
             error_count += 1
+            failed_coins.append(coin)
             pass
         
         # Update progress bar
@@ -70,6 +67,12 @@ def generate_json(filepath):
     
     # Final status update
     status_text.text(f"{total_coins} / {total_coins}     {success_count} success  {error_count} error - Complete!")
+    
+    # Display failed coins if any
+    if failed_coins:
+        st.warning(f"Failed to fetch data for {len(failed_coins)} coins: {', '.join(failed_coins)}")
+    else:
+        st.success("All coins fetched successfully!")
     
     with open(filepath, "w") as f:
         json.dump(data, f)
@@ -173,15 +176,15 @@ grid_spacing = st.slider(
 
 # Add coin limit slider
 max_coins_to_show = st.slider(
-    "Number of coins to display",
+    "Display only top x coins by market cap",
     min_value=5,
     max_value=len(coin_list),
-    value=20,
+    value=50,
     step=5,
     help=f"Select how many coins to display (max: {len(coin_list)})"
 )
 
-json_path = Path("top_20_klines.json")
+json_path = Path("klines.json")
 
 if not json_path.exists():
     st.info("JSON file not found. Generating data...")
