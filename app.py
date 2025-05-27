@@ -9,7 +9,7 @@ import requests
 # --- JSON generation logic from uploaded file ---
 
 coin_list = [
-    'BTC','ETH','XRP','BNB','SOL','DOGE','ADA','TRX','HYPE','SUI','LINK','AVAX','XLM','SHIB','BCH','LEO','HBAR','TON','DOT','LTC','BGB','UNI','TRUMP','PEPE','NEAR','MNT','OM','ALGO','OKB','KAS','TAO','FET','FIL','ARB','ENA','BONK','ICP','APT','MATIC','WTRX','WLD','ETC','XMR','IMX','VET','INJ','RNDR','QNT','MKR','RUNE','LDO','TWT','GRT','AAVE','FLOW','AXS','SAND','THETA','EGLD','FTM','DYDX','ZEC','NEO','CHZ','KLAY','CRV','BAT','1INCH','ENJ','CELO','SNX','COMP','YFI','ZIL','IOST','OMG','NANO','SC','BTT','ZEN','ONT','DGB','ICX','WAVES','STORJ','KNC','ANKR','CVC','REQ','LRC','NMR','BAL','OCEAN','BNT','REN','SXP','SKL','CKB','RSR','ELF','COTI','CTSI','PUNDIX','STMX','ARDR','STRAX' 
+    'BTC','ETH','XRP','BNB','SOL','DOGE','ADA','TRX','HYPE','SUI','LINK','AVAX','XLM','SHIB','BCH','LEO','HBAR','TON','DOT','LTC','BGB','UNI','TRUMP','PEPE','NEAR','MNT','OM','ALGO','OKB','KAS','TAO','FET','FIL','ARB','ENA','BONK','ICP','APT','MATIC','WTRX','WLD','ETC','IMX','VET','INJ','QNT','MKR','RUNE','LDO','TWT','GRT','AAVE','FLOW','AXS','SAND','THETA','EGLD','FTM','DYDX','ZEC','NEO','CHZ','KLAY','CRV','BAT','1INCH','ENJ','CELO','SNX','COMP','YFI','ZIL','IOST','OMG','NANO','SC','BTT','ZEN','ONT','DGB','ICX','WAVES','STORJ','KNC','ANKR','CVC','REQ','LRC','NMR','BAL','OCEAN','BNT','REN','SXP','SKL','CKB','RSR','ELF','COTI','CTSI','PUNDIX','STMX','ARDR','STRAX' 
 
 
     # 'BTC', 'ETH', 'XRP', 'BNB', 'SOL', 'DOGE', 'ADA', 'TRX',
@@ -146,6 +146,15 @@ def load_and_simulate(file, grid_spacing_percent=0.1):
     sorted_results = dict(sorted(results.items(), key=lambda item: item[1]['trades'], reverse=True))
     df = pd.DataFrame.from_dict(sorted_results, orient='index')
     df.index.name = 'Coin'
+    
+    # Create clickable links for coin symbols
+    def make_clickable_link(coin_symbol):
+        url = f"https://www.tradingview.com/symbols/{coin_symbol}USD/"
+        return f'<a href="{url}" target="_blank">{coin_symbol}</a>'
+    
+    # Apply the clickable links to the index (coin symbols)
+    df.index = [make_clickable_link(coin) for coin in df.index]
+    
     return df
 
 
@@ -188,4 +197,5 @@ if json_path.exists():
         df = load_and_simulate(f, grid_spacing)
         # Filter by original rank (market cap ranking) - show only coins with rank 1 to max_coins_to_show
         df_filtered = df[df['rank'] <= max_coins_to_show]
-        st.dataframe(df_filtered)
+        # Display dataframe with HTML links enabled
+        st.write(df_filtered.to_html(escape=False), unsafe_allow_html=True)
