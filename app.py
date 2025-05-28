@@ -164,6 +164,37 @@ def load_and_simulate(file, grid_spacing_percent=0.1):
 # --- Streamlit UI ---
 st.title("Grid Trading Analyzer")
 
+# Add a multi-select widget for selecting coins
+selected_coins_file = Path('data/selected_coins.json')
+
+# Load selected coins from file if it exists
+if selected_coins_file.exists():
+    with open(selected_coins_file, 'r') as f:
+        st.session_state['selected_coins'] = json.load(f)
+else:
+    st.session_state['selected_coins'] = []
+
+# Initialize the multi-select widget with the loaded coins
+selected_coins = st.multiselect(
+    'Select Coins',
+    sorted(coin_list),  # Display coins in alphabetical order
+    default=st.session_state['selected_coins'],
+    help='Select coins to display as tags under My Coins'
+)
+
+# Update session state and save to file if selection changes
+if selected_coins != st.session_state['selected_coins']:
+    st.session_state['selected_coins'] = selected_coins
+    with open(selected_coins_file, 'w') as f:
+        json.dump(st.session_state['selected_coins'], f)
+
+# Display selected coins as tags under the headline
+st.subheader('My Coins')
+if st.session_state['selected_coins']:
+    st.write(', '.join(st.session_state['selected_coins']))
+else:
+    st.write('No coins selected.')
+
 # Add grid spacing slider
 grid_spacing = st.slider(
     "Grid Delta (%)", 
