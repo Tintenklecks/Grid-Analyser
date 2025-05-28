@@ -96,15 +96,15 @@ def get_trend_ball(change_percent):
 def get_trend_arrow(change_percent):
     """Return colored arrow based on price trend"""
     if change_percent > 2:
-        return f"+{change_percent:.1f}% ⬆️"  # Strong up
+        return f"+{change_percent:.1f}%&nbsp;⬆️"  # Strong up
     elif change_percent > 0.5:
-        return f"+{change_percent:.1f}% ↗️"   # Up
+        return f"+{change_percent:.1f}%&nbsp;↗️"   # Up
     elif change_percent > -0.5:
-        return f"{change_percent:.1f}% ➡️"   # Sideways
+        return f"{change_percent:.1f}%&nbsp;➡️"   # Sideways
     elif change_percent > -2:
-        return f"{change_percent:.1f}% ↘️"   # Down
+        return f"{change_percent:.1f}%&nbsp;↘️"   # Down
     else:
-        return f"{change_percent:.1f}% ⬇️"  # Strong down
+        return f"{change_percent:.1f}%&nbsp;⬇️"  # Strong down
 
 def simulate_grid_trading(prices, grid_spacing_percent=0.1, coin_rank=None):
     prices = np.array(prices)
@@ -258,17 +258,24 @@ def highlight_rows(row):
             trend_value = float(trend_str.replace('+', ''))  # Remove + sign if present
         except ValueError:
             trend_value = 0  # Default to 0 if parsing fails
-            
-        if trend_value < -2:
-            return ['background-color: darkred; color: white'] * len(row)  # Even darker red
-        elif trend_value < -0.5:
-            return ['background-color: lightcoral; color: white'] * len(row)  # Medium red
-        elif trend_value > 2:
-            return ['background-color: darkgreen; color: white'] * len(row)  # Even darker green
-        elif trend_value > 0.5:
-            return ['background-color: mediumseagreen; color: white'] * len(row)  # Lighter green
-        else:
-            return ['background-color: whitesmoke; color: black'] * len(row)  # Neutral color with black text
+        
+        # Create a list of styles for each column
+        styles = []
+        for col in row.index:
+            if col in ['Ball', 'rank']:
+                styles.append('')  # No background color for Ball and rank columns
+            else:
+                if trend_value < -2:
+                    styles.append('background-color: darkred; color: white')
+                elif trend_value < -0.5:
+                    styles.append('background-color: lightcoral; color: white')
+                elif trend_value > 2:
+                    styles.append('background-color: darkgreen; color: white')
+                elif trend_value > 0.5:
+                    styles.append('background-color: mediumseagreen; color: white')
+                else:
+                    styles.append('background-color: whitesmoke; color: black')
+        return styles
     else:
         return [''] * len(row)  # No color for coins not in the selected list
 
