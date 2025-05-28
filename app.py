@@ -78,21 +78,33 @@ def generate_json(filepath):
         json.dump(data, f)
     return filepath
 
-# --- Grid Trading Simulation ---
-def get_trend_arrow(start_price, end_price):
-    """Return colored arrow based on price trend"""
-    change_percent = ((end_price - start_price) / start_price) * 100
-    
+#--- Trend Ball based on change percent ---
+def get_trend_ball(change_percent):
     if change_percent > 2:
-        return f"🟢 ⬆️ ({change_percent:.1f}%)"  # Strong up (45° up right)
+        return '🟢'
     elif change_percent > 0.5:
-        return f"🟢 ↗️ ({change_percent:.1f}%)"   # Up
+        return '🟢'
     elif change_percent > -0.5:
-        return f"⚪ → ({change_percent:.1f}%)"   # Sideways (gray)
+        return '⚪'
     elif change_percent > -2:
-        return f"🔴 ↘️ ({change_percent:.1f}%)"   # Down
+        return '🔴'
     else:
-        return f"🔴 ⬇️ ({change_percent:.1f}%)"  # Strong down (45° down right)
+        return '🔴'
+
+
+# --- Grid Trading Simulation ---
+def get_trend_arrow(change_percent):
+    """Return colored arrow based on price trend"""
+    if change_percent > 2:
+        return f"+{change_percent:.1f}% ⬆️"  # Strong up
+    elif change_percent > 0.5:
+        return f"+{change_percent:.1f}% ↗️"   # Up
+    elif change_percent > -0.5:
+        return f"{change_percent:.1f}% ➡️"   # Sideways
+    elif change_percent > -2:
+        return f"{change_percent:.1f}% ↘️"   # Down
+    else:
+        return f"{change_percent:.1f}% ⬇️"  # Strong down
 
 def simulate_grid_trading(prices, grid_spacing_percent=0.1, coin_rank=None):
     prices = np.array(prices)
@@ -103,7 +115,7 @@ def simulate_grid_trading(prices, grid_spacing_percent=0.1, coin_rank=None):
     # Calculate trend
     start_price = prices[0]
     end_price = prices[-1]
-    trend_arrow = get_trend_arrow(start_price, end_price)
+    change_percent = ((end_price - start_price) / start_price) * 100
 
     grid_spacing = grid_spacing_percent / 100.0
     num_lines = int(np.floor((max_price - min_price) / (min_price * grid_spacing)))
@@ -127,7 +139,7 @@ def simulate_grid_trading(prices, grid_spacing_percent=0.1, coin_rank=None):
 
     return {
         "rank": coin_rank,
-        "trend": trend_arrow,
+        "change_percent": change_percent,
         "trades": trades,
         "min": float(min_price),
         "max": float(max_price),
@@ -150,6 +162,10 @@ def load_and_simulate(file, grid_spacing_percent=0.1):
     df = pd.DataFrame.from_dict(sorted_results, orient='index')
     df.index.name = 'Coin'
     
+    # Add trend arrow and ball based on change_percent
+    df['trend'] = df['change_percent'].apply(get_trend_arrow)
+    df['Ball'] = df['change_percent'].apply(get_trend_ball)
+    
     # Create clickable links for coin symbols
     def make_clickable_link(coin_symbol):
         url = f"https://www.tradingview.com/symbols/{coin_symbol}USD/"
@@ -157,6 +173,11 @@ def load_and_simulate(file, grid_spacing_percent=0.1):
     
     # Apply the clickable links to the index (coin symbols)
     df.index = [make_clickable_link(coin) for coin in df.index]
+    
+    # Drop change_percent column and reorder columns
+    df = df.drop('change_percent', axis=1)
+    columns_order = ['Ball', 'rank', 'trend', 'trades', 'min', 'max', 'avg', 'grid_density']
+    df = df[columns_order]
     
     return df
 
@@ -226,10 +247,39 @@ if st.button("(Re)Generate JSON Data from Binance"):
     generate_json(json_path)
     st.success("JSON file updated.")
 
+# Function to apply conditional formatting
+
+def highlight_rows(row):
+    coin_symbol = row.name.split('>')[1].split('<')[0]  # Extract coin symbol from the HTML link
+    if coin_symbol in st.session_state['selected_coins']:
+        # Extract percentage from trend string (e.g., "+1.5% ⬆️" -> 1.5)
+        trend_str = row['trend'].split('%')[0]  # Get the part before the %
+        try:
+            trend_value = float(trend_str.replace('+', ''))  # Remove + sign if present
+        except ValueError:
+            trend_value = 0  # Default to 0 if parsing fails
+            
+        if trend_value < -2:
+            return ['background-color: darkred; color: white'] * len(row)  # Even darker red
+        elif trend_value < -0.5:
+            return ['background-color: lightcoral; color: white'] * len(row)  # Medium red
+        elif trend_value > 2:
+            return ['background-color: darkgreen; color: white'] * len(row)  # Even darker green
+        elif trend_value > 0.5:
+            return ['background-color: mediumseagreen; color: white'] * len(row)  # Lighter green
+        else:
+            return ['background-color: whitesmoke; color: black'] * len(row)  # Neutral color with black text
+    else:
+        return [''] * len(row)  # No color for coins not in the selected list
+
 if json_path.exists():
     with open(json_path, "r") as f:
         df = load_and_simulate(f, grid_spacing)
         # Filter by original rank (market cap ranking) - show only coins with rank 1 to max_coins_to_show
         df_filtered = df[df['rank'] <= max_coins_to_show]
+        
+        # Apply conditional formatting
+        df_styled = df_filtered.style.apply(highlight_rows, axis=1)
+        
         # Display dataframe with HTML links enabled
-        st.write(df_filtered.to_html(escape=False), unsafe_allow_html=True)
+        st.write(df_styled.to_html(escape=False), unsafe_allow_html=True)
