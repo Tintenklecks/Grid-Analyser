@@ -2,107 +2,78 @@
 //  CoinRowView.swift
 //  Grid Analyzer
 //
-//  Row view for displaying coin information
+//  View for displaying a single coin row
 //
 
 import SwiftUI
 
 struct CoinRowView: View {
     let coin: CoinPresentationModel
-    let onTap: () -> Void
-    
-    @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    let onToggleSelection: () -> Void
+    let onTapDetail: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            content
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-    
-    private var content: some View {
-        HStack(spacing: 12) {
-            // Trend indicator
-            Text(coin.trendBall)
-                .font(.title2)
-            
-            // Symbol
-            Text(coin.symbol)
-                .font(.system(.body, design: .monospaced))
-                .fontWeight(.bold)
-                .frame(width: 60, alignment: .leading)
-            
-            // Trend arrow
-            HStack(spacing: 4) {
-                Text(coin.trendArrow.0)
-                    .font(.system(.caption, design: .monospaced))
-                Image(systemName: coin.trendArrow.1)
-                    .font(.caption)
-            }
-            .foregroundColor(trendColor)
-            
-            Spacer()
-            
-            // Stats
-            if horizontalSizeClass == .regular {
-                // iPad/Mac layout - show more info horizontally
-                HStack(spacing: 16) {
-                    statItem(title: "Trades", value: "\(coin.successfulTrades)")
-                    statItem(title: "Grid", value: "\(coin.gridDensity)")
-                    statItem(title: "Min", value: coin.minPriceFormatted)
-                    statItem(title: "Max", value: coin.maxPriceFormatted)
-                    statItem(title: "Avg", value: coin.avgPriceFormatted)
-                }
-            } else {
-                // iPhone layout - compact view
-                VStack(alignment: .trailing, spacing: 2) {
-                    HStack {
-                        Text("Trades:")
-                            .foregroundColor(.secondary)
-                        Text("\(coin.successfulTrades)")
-                            .fontWeight(.semibold)
-                    }
-                    .font(.caption)
+        HStack(spacing: 0) {
+            // Left side - Selection area
+            Button(action: onToggleSelection) {
+                HStack(spacing: 12) {
+                    // Selection indicator
+                    Circle()
+                        .fill(coin.selectionColor)
+                        .frame(width: 10, height: 10)
                     
-                    HStack {
-                        Text("Grid:")
-                            .foregroundColor(.secondary)
-                        Text("\(coin.gridDensity)")
-                    }
-                    .font(.caption2)
+                    // Symbol
+                    Text(coin.symbol)
+                        .font(.headline)
+                        .frame(width: 60, alignment: .leading)
                 }
+                .padding(.leading, 16)
+                .padding(.trailing, 8)
+                .contentShape(Rectangle())
             }
+            .buttonStyle(PlainButtonStyle())
+            
+            // Right side - Detail area
+            Button(action: onTapDetail) {
+                HStack {
+                    // Trades with color coding
+                    Text("\(coin.successfulTrades)")
+                        .font(.system(.body, design: .monospaced))
+                        .foregroundColor(coin.tradesTextColor)
+                        .frame(width: 50, alignment: .trailing)
+                    
+                    // Min/Max spread
+                    VStack(alignment: .trailing, spacing: 2) {
+                        Text(coin.formattedMinPrice)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(coin.formattedMaxPrice)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .frame(width: 90, alignment: .trailing)
+                    
+                    // Change percentage with arrow
+                    HStack(spacing: 4) {
+                        Image(systemName: coin.changeArrowName)
+                            .font(.caption)
+                        Text(coin.formattedChangePercent)
+                            .font(.caption)
+                    }
+                    .foregroundColor(coin.changeColor)
+                    .frame(width: 70, alignment: .trailing)
+                    
+                    // Navigation chevron
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                        .padding(.trailing, 16)
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(PlainButtonStyle())
         }
-        .padding(.horizontal)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(coin.isSelected ? Color.blue.opacity(0.1) : Color(.systemGray6))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(coin.isSelected ? Color.blue : Color.clear, lineWidth: 2)
-        )
-    }
-    
-    private func statItem(title: String, value: String) -> some View {
-        VStack(spacing: 2) {
-            Text(title)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            Text(value)
-                .font(.caption)
-                .fontWeight(.medium)
-        }
-    }
-    
-    private var trendColor: Color {
-        if coin.trendArrow.1.contains("up") && !coin.trendArrow.1.contains("down") {
-            return .green
-        } else if coin.trendArrow.1.contains("down") {
-            return .red
-        } else {
-            return .primary
-        }
+        .padding(.vertical, 8)
+        .background(Color(UIColor.systemBackground))
     }
 } 

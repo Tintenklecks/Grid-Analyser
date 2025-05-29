@@ -2,154 +2,135 @@
 //  CoinListView.swift
 //  Grid Analyzer
 //
-//  Main view for displaying the list of coins
+//  View for displaying the list of coins
 //
 
 import SwiftUI
 
 struct CoinListView: View {
     @StateObject private var viewModel: CoinListViewModel
-    @ObservedObject private var settings: Settings
-    @State private var showingSettings = false
+    @State private var selectedCoin: CoinPresentationModel?
     
     init(settings: Settings) {
-        self.settings = settings
-        self._viewModel = StateObject(wrappedValue: CoinListViewModel(settings: settings))
+        _viewModel = StateObject(wrappedValue: CoinListViewModel(settings: settings))
     }
     
     var body: some View {
         NavigationStack {
-            ZStack {
-                if viewModel.coins.isEmpty && !viewModel.isLoading {
-                    emptyStateView
+            Group {
+                if viewModel.isLoading && viewModel.coins.isEmpty {
+                    loadingView
                 } else {
-                    coinListContent
-                }
-                
-                if viewModel.isProcessing {
-                    progressOverlay
+                    coinList
                 }
             }
-            .navigationTitle("Grid Trading Analyzer")
+            .navigationTitle("Grid Analyzer")
+            .navigationBarTitleDisplayMode(.large)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     if let lastUpdate = viewModel.lastUpdateTime {
-                        Text(timeAgoString(from: lastUpdate))
+                        Text("Updated: \(lastUpdate, formatter: timeFormatter)")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
-                
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: { showingSettings = true }) {
-                        Image(systemName: "gearshape")
-                    }
-                }
             }
-            .sheet(isPresented: $showingSettings) {
-                SettingsView(settings: settings)
+            .navigationDestination(item: $selectedCoin) { coin in
+                CoinDetailView(coin: coin)
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.clearError()
-                }
-            } message: {
-                Text(viewModel.errorMessage ?? "")
+        }
+        .task {
+            await viewModel.loadData()
+        }
+        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK") {
+                viewModel.clearError()
             }
-            .task {
-                await viewModel.loadData()
+        } message: {
+            if let error = viewModel.errorMessage {
+                Text(error)
+            }
+        }
+        .overlay {
+            if viewModel.isProcessing {
+                ProcessingOverlay(
+                    title: viewModel.progressTitle,
+                    detail: viewModel.progressDetail
+                )
             }
         }
     }
     
-    private var coinListContent: some View {
+    private var coinList: some View {
         ScrollView {
-            // Selected coins header
-            if !viewModel.selectedSymbols.isEmpty {
-                selectedCoinsHeader
-            }
-            
-            // Coin list
-            LazyVStack(spacing: 8) {
+            LazyVStack(spacing: 1) {
                 ForEach(viewModel.coins) { coin in
-                    CoinRowView(coin: coin) {
-                        viewModel.toggleSelection(for: coin.symbol)
-                    }
+                    CoinRowView(
+                        coin: coin,
+                        onToggleSelection: {
+                            viewModel.toggleSelection(for: coin.symbol)
+                        },
+                        onTapDetail: {
+                            selectedCoin = coin
+                        }
+                    )
+                    .background(Color(UIColor.systemBackground))
+                    
+                    Divider()
                 }
             }
-            .padding()
         }
         .refreshable {
             await viewModel.refreshData()
         }
     }
     
-    private var selectedCoinsHeader: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(Array(viewModel.selectedSymbols.sorted()), id: \.self) { symbol in
-                    Text(symbol)
-                        .font(.caption)
-                        .fontWeight(.medium)
-                        .padding(.horizontal, 12)
-                        .padding(.vertical, 6)
-                        .background(
-                            Capsule()
-                                .fill(Color.blue.opacity(0.2))
-                        )
-                }
-            }
-            .padding(.horizontal)
-        }
-        .padding(.vertical, 8)
-    }
-    
-    private var emptyStateView: some View {
-        VStack(spacing: 16) {
-            Image(systemName: "chart.line.uptrend.xyaxis")
-                .font(.system(size: 60))
-                .foregroundColor(.secondary)
-            
-            Text("No Data Available")
-                .font(.title2)
-                .fontWeight(.semibold)
-            
-            Text("Pull down to load data")
-                .font(.body)
+    private var loadingView: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+            Text("Loading coin data...")
+                .font(.headline)
                 .foregroundColor(.secondary)
         }
-        .padding()
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
     
-    private var progressOverlay: some View {
-        Color.black.opacity(0.4)
-            .ignoresSafeArea()
-            .overlay {
-                VStack(spacing: 16) {
-                    Text(viewModel.progressTitle)
-                        .font(.headline)
-                    
-                    ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(1.5)
-                    
-                    Text(viewModel.progressDetail)
+    private var timeFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        formatter.dateStyle = .none
+        return formatter
+    }
+}
+
+struct ProcessingOverlay: View {
+    let title: String
+    let detail: String
+    
+    var body: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .ignoresSafeArea()
+            
+            VStack(spacing: 16) {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+                
+                Text(title)
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                if !detail.isEmpty {
+                    Text(detail)
                         .font(.subheadline)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
+                        .foregroundColor(.white.opacity(0.8))
                 }
-                .padding(32)
-                .background(
-                    RoundedRectangle(cornerRadius: 16)
-                        .fill(Color(.systemBackground))
-                        .shadow(radius: 10)
-                )
             }
-    }
-    
-    private func timeAgoString(from date: Date) -> String {
-        let formatter = RelativeDateTimeFormatter()
-        formatter.unitsStyle = .abbreviated
-        return formatter.localizedString(for: date, relativeTo: Date())
+            .padding(30)
+            .background(Color.black.opacity(0.8))
+            .cornerRadius(20)
+        }
     }
 } 

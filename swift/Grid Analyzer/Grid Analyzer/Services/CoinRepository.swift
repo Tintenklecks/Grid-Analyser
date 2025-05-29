@@ -10,6 +10,8 @@ import Foundation
 protocol CoinRepositoryProtocol {
     func loadPersistedData() throws -> PersistedDataContainer?
     func fetchAndSaveData(symbols: [String], gridSpacing: Double, progress: @escaping (String, String) -> Void) async throws -> PersistedDataContainer
+    func saveSelections(_ selections: Set<String>) throws
+    func loadSelections() -> Set<String>
     var lastUpdateTime: Date? { get }
 }
 
@@ -29,6 +31,14 @@ final class CoinRepository: CoinRepositoryProtocol {
     
     func loadPersistedData() throws -> PersistedDataContainer? {
         return try persistenceService.load()
+    }
+    
+    func saveSelections(_ selections: Set<String>) throws {
+        try persistenceService.saveSelections(selections)
+    }
+    
+    func loadSelections() -> Set<String> {
+        return (try? persistenceService.loadSelections()) ?? []
     }
     
     func fetchAndSaveData(symbols: [String], gridSpacing: Double, progress: @escaping (String, String) -> Void) async throws -> PersistedDataContainer {

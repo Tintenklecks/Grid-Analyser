@@ -41,6 +41,7 @@ final class CoinListViewModel: ObservableObject {
         self.repository = repository
         self.settings = settings
         self.lastUpdateTime = repository.lastUpdateTime
+        self.selectedSymbols = repository.loadSelections()
         
         // Observe settings changes
         settings.objectWillChange.sink { [weak self] _ in
@@ -58,6 +59,7 @@ final class CoinListViewModel: ObservableObject {
             if let container = try repository.loadPersistedData() {
                 currentContainer = container
                 lastUpdateTime = container.lastUpdateTime
+                selectedSymbols = repository.loadSelections()
                 updatePresentationModels()
             } else {
                 // No persisted data, fetch automatically
@@ -90,6 +92,16 @@ final class CoinListViewModel: ObservableObject {
             selectedSymbols.insert(symbol)
         }
         updatePresentationModels()
+        
+        // Save the updated selections to disk
+        Task {
+            do {
+                try repository.saveSelections(selectedSymbols)
+                print("✅ Saved selections to disk: \(selectedSymbols)")
+            } catch {
+                print("❌ Failed to save selections: \(error)")
+            }
+        }
     }
     
     func clearError() {
@@ -167,7 +179,7 @@ final class CoinListViewModel: ObservableObject {
                     let coin = persistedCoin.toCoin()
                     let analysis = analyzer.analyze(coin)
                     let isSelected = selectedSymbols.contains(coin.symbol)
-                    return CoinPresentationModel(from: analysis, isSelected: isSelected, critz: settings.critz)
+                    return CoinPresentationModel(from: analysis, isSelected: isSelected, critz: Int(settings.critz))
                 }
                 .sorted { $0.successfulTrades > $1.successfulTrades }
             
@@ -184,7 +196,7 @@ final class CoinListViewModel: ObservableObject {
                         gridDensity: persistedCoin.gridDensity
                     )
                     let isSelected = selectedSymbols.contains(coin.symbol)
-                    return CoinPresentationModel(from: analysis, isSelected: isSelected, critz: settings.critz)
+                    return CoinPresentationModel(from: analysis, isSelected: isSelected, critz: Int(settings.critz))
                 }
                 .sorted { $0.successfulTrades > $1.successfulTrades }
             

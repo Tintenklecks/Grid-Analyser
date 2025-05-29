@@ -2,65 +2,105 @@
 //  CoinPresentationModel.swift
 //  Grid Analyzer
 //
-//  Presentation model for formatting coin data for views
+//  Presentation model for coin display
 //
 
 import Foundation
+import SwiftUI
 
-struct CoinPresentationModel: Identifiable {
-    let id: UUID
+struct CoinPresentationModel: Identifiable, Hashable {
+    let id: String
     let symbol: String
+    let prices: [Double]
+    let minPrice: Double
+    let maxPrice: Double
+    let avgPrice: Double
+    let changePercent: Double
     let successfulTrades: Int
     let gridDensity: Int
-    let minPriceFormatted: String
-    let maxPriceFormatted: String
-    let avgPriceFormatted: String
-    let changePercentFormatted: String
-    let trendBall: String
-    let trendArrow: (String, String)
     let isSelected: Bool
+    let critz: Int
     
-    init(from analysis: GridTradingAnalyzer.Analysis, isSelected: Bool, critz: Double) {
-        self.id = analysis.coin.id
+    init(from analysis: GridTradingAnalyzer.Analysis, isSelected: Bool, critz: Int) {
+        self.id = analysis.coin.symbol
         self.symbol = analysis.coin.symbol
+        self.prices = analysis.coin.prices
+        self.minPrice = analysis.coin.minPrice
+        self.maxPrice = analysis.coin.maxPrice
+        self.avgPrice = analysis.coin.avgPrice
+        self.changePercent = analysis.coin.changePercent
         self.successfulTrades = analysis.successfulTrades
         self.gridDensity = analysis.gridDensity
         self.isSelected = isSelected
-        
-        // Format prices
-        self.minPriceFormatted = String(format: "%.2f", analysis.coin.minPrice)
-        self.maxPriceFormatted = String(format: "%.2f", analysis.coin.maxPrice)
-        self.avgPriceFormatted = String(format: "%.2f", analysis.coin.avgPrice)
-        
-        let changePercent = analysis.coin.changePercent
-        
-        // Format change percentage
-        if changePercent >= 0 {
-            self.changePercentFormatted = "+\(String(format: "%.1f", changePercent))%"
+        self.critz = critz
+    }
+    
+    // MARK: - Computed Properties for Display
+    
+    var selectionColor: Color {
+        isSelected ? .blue : Color(.systemGray4)
+    }
+    
+    var tradesTextColor: Color {
+        if successfulTrades >= critz {
+            return .green
+        } else if successfulTrades > 0 {
+            return .orange
         } else {
-            self.changePercentFormatted = "\(String(format: "%.1f", changePercent))%"
+            return .red
         }
-        
-        // Determine trend ball
-        if changePercent > critz {
-            self.trendBall = "🟢"
-        } else if changePercent > -critz/2 {
-            self.trendBall = "⚪"
+    }
+    
+    var formattedMinPrice: String {
+        formatPrice(minPrice)
+    }
+    
+    var formattedMaxPrice: String {
+        formatPrice(maxPrice)
+    }
+    
+    var formattedAvgPrice: String {
+        formatPrice(avgPrice)
+    }
+    
+    var formattedChangePercent: String {
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .percent
+        formatter.minimumFractionDigits = 1
+        formatter.maximumFractionDigits = 1
+        formatter.positivePrefix = "+"
+        return formatter.string(from: NSNumber(value: changePercent / 100)) ?? "0%"
+    }
+    
+    var changeArrowName: String {
+        if changePercent > 0 {
+            return "arrow.up.right"
+        } else if changePercent < 0 {
+            return "arrow.down.right"
         } else {
-            self.trendBall = "🔴"
+            return "arrow.right"
         }
-        
-        // Determine trend arrow
-        if changePercent > critz {
-            self.trendArrow = (changePercentFormatted, "arrow.up")
-        } else if changePercent > critz/2 {
-            self.trendArrow = (changePercentFormatted, "arrow.up.right")
-        } else if changePercent > -critz/2 {
-            self.trendArrow = (changePercentFormatted, "arrow.right")
-        } else if changePercent > -critz {
-            self.trendArrow = (changePercentFormatted, "arrow.down.right")
+    }
+    
+    var changeColor: Color {
+        if changePercent > 0 {
+            return .green
+        } else if changePercent < 0 {
+            return .red
         } else {
-            self.trendArrow = (changePercentFormatted, "arrow.down")
+            return .primary
+        }
+    }
+    
+    // MARK: - Private Helpers
+    
+    private func formatPrice(_ price: Double) -> String {
+        if price < 1 {
+            return String(format: "%.4f", price)
+        } else if price < 100 {
+            return String(format: "%.2f", price)
+        } else {
+            return String(format: "%.0f", price)
         }
     }
 } 
