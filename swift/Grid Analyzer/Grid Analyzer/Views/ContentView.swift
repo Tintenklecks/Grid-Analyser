@@ -25,7 +25,7 @@ struct ContentView: View {
                             .font(.title2)
                             .foregroundColor(.white)
                             .frame(width: 56, height: 56)
-                            .background(Circle().fill(Color.blue))
+                            .background(Circle().fill(Color.accentColor))
                             .shadow(radius: 4)
                     }
                     .padding()

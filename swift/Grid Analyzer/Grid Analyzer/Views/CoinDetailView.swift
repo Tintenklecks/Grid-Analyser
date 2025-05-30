@@ -53,16 +53,22 @@ struct CoinDetailView: View {
             }
             .padding()
         }
-        .navigationTitle(coin.symbol)
+        .navigationTitle("Coin Details")
         .navigationBarTitleDisplayMode(.large)
     }
     
     private var headerSection: some View {
         VStack(spacing: 8) {
             HStack {
-                Circle()
-                    .fill(coin.selectionColor)
-                    .frame(width: 20, height: 20)
+                if coin.isSelected {
+                    Circle()
+                        .fill(Color.accentColor)
+                        .frame(width: 20, height: 20)
+                } else {
+                    Circle()
+                        .stroke(Color(.systemGray3), lineWidth: 2)
+                        .frame(width: 20, height: 20)
+                }
                 
                 Text(coin.symbol)
                     .font(.largeTitle)

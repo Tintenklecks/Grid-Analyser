@@ -37,10 +37,6 @@ struct CoinPresentationModel: Identifiable, Hashable {
     
     // MARK: - Computed Properties for Display
     
-    var selectionColor: Color {
-        isSelected ? .blue : Color(.systemGray4)
-    }
-    
     var tradesTextColor: Color {
         if successfulTrades >= critz {
             return .green

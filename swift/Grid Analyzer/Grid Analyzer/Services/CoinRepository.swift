@@ -12,6 +12,7 @@ protocol CoinRepositoryProtocol {
     func fetchAndSaveData(symbols: [String], gridSpacing: Double, progress: @escaping (String, String) -> Void) async throws -> PersistedDataContainer
     func saveSelections(_ selections: Set<String>) throws
     func loadSelections() -> Set<String>
+    func loadAvailableCoins() -> [String]
     var lastUpdateTime: Date? { get }
 }
 
@@ -124,6 +125,16 @@ final class CoinRepository: CoinRepositoryProtocol {
             return "Invalid data format"
         case .networkError(let underlyingError):
             return underlyingError.localizedDescription
+        }
+    }
+    
+    func loadAvailableCoins() -> [String] {
+        do {
+            return try persistenceService.loadAvailableCoins()
+        } catch {
+            print("Failed to load available coins: \(error)")
+            // Return a default list if loading fails
+            return ["BTC", "ETH", "BNB", "SOL", "XRP"]
         }
     }
 }

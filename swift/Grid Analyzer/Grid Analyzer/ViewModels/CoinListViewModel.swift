@@ -23,15 +23,7 @@ final class CoinListViewModel: ObservableObject {
     // Dependencies
     private let repository: CoinRepositoryProtocol
     private let settings: Settings
-    private let availableSymbols = [
-        "BTC", "ETH", "XRP", "BNB", "SOL", "DOGE", "ADA", "TRX", "SUI", "LINK",
-        "AVAX", "XLM", "SHIB", "BCH", "HBAR", "DOT", "LTC", "UNI", "PEPE", 
-        "NEAR", "ALGO", "FET", "FIL", "ARB", "ENA", "BONK", "ICP", "APT", 
-        "MATIC", "WLD", "ETC", "IMX", "VET", "INJ", "MKR", "RUNE", "LDO", 
-        "GRT", "AAVE", "AXS", "SAND", "THETA", "FTM", "CHZ", "CRV", "BAT", 
-        "ENJ", "SNX", "COMP", "YFI", "ZIL", "ANKR", "LRC", "OCEAN", "SKL", 
-        "RSR", "COTI", "CTSI"
-    ]
+    private var availableSymbols: [String] = []
     
     // Private state
     private var currentContainer: PersistedDataContainer?
@@ -42,6 +34,9 @@ final class CoinListViewModel: ObservableObject {
         self.settings = settings
         self.lastUpdateTime = repository.lastUpdateTime
         self.selectedSymbols = repository.loadSelections()
+        self.availableSymbols = repository.loadAvailableCoins()
+        
+        print("Loaded \(availableSymbols.count) available symbols from coins.json")
         
         // Observe settings changes
         settings.objectWillChange.sink { [weak self] _ in

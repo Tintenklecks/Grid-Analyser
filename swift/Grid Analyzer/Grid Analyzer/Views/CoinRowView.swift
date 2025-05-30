@@ -18,9 +18,15 @@ struct CoinRowView: View {
             Button(action: onToggleSelection) {
                 HStack(spacing: 12) {
                     // Selection indicator
-                    Circle()
-                        .fill(coin.selectionColor)
-                        .frame(width: 10, height: 10)
+                    if coin.isSelected {
+                        Circle()
+                            .fill(Color.accentColor)
+                            .frame(width: 12, height: 12)
+                    } else {
+                        Circle()
+                            .stroke(Color(.systemGray3), lineWidth: 1.5)
+                            .frame(width: 12, height: 12)
+                    }
                     
                     // Symbol
                     Text(coin.symbol)
@@ -36,22 +42,37 @@ struct CoinRowView: View {
             // Right side - Detail area
             Button(action: onTapDetail) {
                 HStack {
-                    // Trades with color coding
-                    Text("\(coin.successfulTrades)")
-                        .font(.system(.body, design: .monospaced))
-                        .foregroundColor(coin.tradesTextColor)
-                        .frame(width: 50, alignment: .trailing)
-                    
-                    // Min/Max spread
-                    VStack(alignment: .trailing, spacing: 2) {
-                        Text(coin.formattedMinPrice)
+                    // Trades with "trades" label
+                    HStack(spacing: 4) {
+                        Text("\(coin.successfulTrades)")
                             .font(.caption)
-                            .foregroundColor(.secondary)
-                        Text(coin.formattedMaxPrice)
+                            .foregroundColor(.primary)
+                        Text("trades")
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                    .frame(width: 90, alignment: .trailing)
+                    .frame(width: 80, alignment: .trailing)
+                    
+                    // Min/Max with labels
+                    VStack(alignment: .trailing, spacing: 2) {
+                        HStack(spacing: 4) {
+                            Text(coin.formattedMinPrice)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("min")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                        HStack(spacing: 4) {
+                            Text(coin.formattedMaxPrice)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                            Text("max")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .frame(width: 110, alignment: .trailing)
                     
                     // Change percentage with arrow
                     HStack(spacing: 4) {
@@ -74,6 +95,8 @@ struct CoinRowView: View {
             .buttonStyle(PlainButtonStyle())
         }
         .padding(.vertical, 8)
-        .background(Color(UIColor.systemBackground))
+        .background(
+            coin.isSelected ? Color.accentColor.opacity(0.1) : Color(UIColor.systemBackground)
+        )
     }
 } 

@@ -10,6 +10,9 @@ import SwiftUI
 struct CoinListView: View {
     @StateObject private var viewModel: CoinListViewModel
     @State private var selectedCoin: CoinPresentationModel?
+    @State private var showingRefreshConfirmation = false
+    @State private var coinToUnselect: String?
+    @State private var showingUnselectConfirmation = false
     
     init(settings: Settings) {
         _viewModel = StateObject(wrappedValue: CoinListViewModel(settings: settings))
@@ -17,11 +20,19 @@ struct CoinListView: View {
     
     var body: some View {
         NavigationStack {
-            Group {
-                if viewModel.isLoading && viewModel.coins.isEmpty {
-                    loadingView
-                } else {
-                    coinList
+            VStack(spacing: 0) {
+                // Selected coins tags
+                if !viewModel.selectedSymbols.isEmpty {
+                    selectedCoinsSection
+                }
+                
+                // Main content
+                Group {
+                    if viewModel.isLoading && viewModel.coins.isEmpty {
+                        loadingView
+                    } else {
+                        coinList
+                    }
                 }
             }
             .navigationTitle("Grid Analyzer")
@@ -51,6 +62,28 @@ struct CoinListView: View {
                 Text(error)
             }
         }
+        .alert("Refresh Data?", isPresented: $showingRefreshConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Refresh", role: .destructive) {
+                Task {
+                    await viewModel.refreshData()
+                }
+            }
+        } message: {
+            Text("This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete.")
+        }
+        .alert("Unselect Coin?", isPresented: $showingUnselectConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Unselect", role: .destructive) {
+                if let symbol = coinToUnselect {
+                    viewModel.toggleSelection(for: symbol)
+                }
+            }
+        } message: {
+            if let symbol = coinToUnselect {
+                Text("Do you want to unselect \(symbol)?")
+            }
+        }
         .overlay {
             if viewModel.isProcessing {
                 ProcessingOverlay(
@@ -59,6 +92,22 @@ struct CoinListView: View {
                 )
             }
         }
+    }
+    
+    private var selectedCoinsSection: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(Array(viewModel.selectedSymbols).sorted(), id: \.self) { symbol in
+                    SelectedCoinTag(symbol: symbol) {
+                        coinToUnselect = symbol
+                        showingUnselectConfirmation = true
+                    }
+                }
+            }
+            .padding(.horizontal)
+            .padding(.vertical, 8)
+        }
+        .background(Color(.systemGray6))
     }
     
     private var coinList: some View {
@@ -81,7 +130,7 @@ struct CoinListView: View {
             }
         }
         .refreshable {
-            await viewModel.refreshData()
+            showingRefreshConfirmation = true
         }
     }
     
@@ -101,6 +150,30 @@ struct CoinListView: View {
         formatter.timeStyle = .short
         formatter.dateStyle = .none
         return formatter
+    }
+}
+
+struct SelectedCoinTag: View {
+    let symbol: String
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 6) {
+                Text(symbol)
+                    .font(.system(.footnote, design: .rounded))
+                    .fontWeight(.medium)
+                
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 14))
+                    .foregroundColor(.white.opacity(0.8))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(Color.accentColor)
+            .foregroundColor(.white)
+            .clipShape(Capsule())
+        }
     }
 }
 
