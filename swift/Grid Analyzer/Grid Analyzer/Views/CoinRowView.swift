@@ -81,6 +81,9 @@ struct CoinRowView: View {
                     }
                 }
             }
+            .onTapGesture {
+                onTapDetail()
+            }
             
             // Navigation chevron
             Button(action: onTapDetail) {
