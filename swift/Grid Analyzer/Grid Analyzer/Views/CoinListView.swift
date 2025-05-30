@@ -13,6 +13,7 @@ struct CoinListView: View {
     @State private var showingRefreshConfirmation = false
     @State private var coinToUnselect: String?
     @State private var showingUnselectConfirmation = false
+    @Environment(\.showingSettings) var showingSettings
     
     init(settings: Settings) {
         _viewModel = StateObject(wrappedValue: CoinListViewModel(settings: settings))
@@ -20,34 +21,86 @@ struct CoinListView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // Selected coins tags
+            List {
+                // Selected coins section
                 if !viewModel.selectedSymbols.isEmpty {
-                    selectedCoinsSection
+                    Section {
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                ForEach(Array(viewModel.selectedSymbols).sorted(), id: \.self) { symbol in
+                                    SelectedCoinChip(symbol: symbol) {
+                                        coinToUnselect = symbol
+                                        showingUnselectConfirmation = true
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 4)
+                            .padding(.vertical, 2)
+                        }
+                        .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .listRowBackground(Color.clear)
+                    }
                 }
                 
-                // Main content
-                Group {
+                // Coins list section
+                Section {
                     if viewModel.isLoading && viewModel.coins.isEmpty {
-                        loadingView
+                        HStack {
+                            Spacer()
+                            VStack(spacing: 16) {
+                                ProgressView()
+                                Text("Loading coin data...")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
+                            }
+                            .padding(.vertical, 40)
+                            Spacer()
+                        }
+                        .listRowBackground(Color.clear)
                     } else {
-                        coinList
+                        ForEach(viewModel.coins) { coin in
+                            CoinRowView(
+                                coin: coin,
+                                onToggleSelection: {
+                                    viewModel.toggleSelection(for: coin.symbol)
+                                },
+                                onTapDetail: {
+                                    selectedCoin = coin
+                                }
+                            )
+                        }
+                    }
+                } header: {
+                    if let lastUpdate = viewModel.lastUpdateTime {
+                        Text("Updated \(lastUpdate, formatter: timeFormatter)")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .textCase(nil)
                     }
                 }
             }
+            .listStyle(.insetGrouped)
             .navigationTitle("Grid Analyzer")
-            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    if let lastUpdate = viewModel.lastUpdateTime {
-                        Text("Updated: \(lastUpdate, formatter: timeFormatter)")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    HStack(spacing: 16) {
+                        Button(action: { showingRefreshConfirmation = true }) {
+                            Image(systemName: "arrow.clockwise")
+                                .fontWeight(.medium)
+                        }
+                        
+                        Button(action: { showingSettings.wrappedValue = true }) {
+                            Image(systemName: "gearshape")
+                                .fontWeight(.medium)
+                        }
                     }
                 }
             }
             .navigationDestination(item: $selectedCoin) { coin in
                 CoinDetailView(coin: coin)
+            }
+            .refreshable {
+                showingRefreshConfirmation = true
             }
         }
         .task {
@@ -64,7 +117,7 @@ struct CoinListView: View {
         }
         .alert("Refresh Data?", isPresented: $showingRefreshConfirmation) {
             Button("Cancel", role: .cancel) { }
-            Button("Refresh", role: .destructive) {
+            Button("Refresh") {
                 Task {
                     await viewModel.refreshData()
                 }
@@ -94,57 +147,6 @@ struct CoinListView: View {
         }
     }
     
-    private var selectedCoinsSection: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(Array(viewModel.selectedSymbols).sorted(), id: \.self) { symbol in
-                    SelectedCoinTag(symbol: symbol) {
-                        coinToUnselect = symbol
-                        showingUnselectConfirmation = true
-                    }
-                }
-            }
-            .padding(.horizontal)
-            .padding(.vertical, 8)
-        }
-        .background(Color(.systemGray6))
-    }
-    
-    private var coinList: some View {
-        ScrollView {
-            LazyVStack(spacing: 1) {
-                ForEach(viewModel.coins) { coin in
-                    CoinRowView(
-                        coin: coin,
-                        onToggleSelection: {
-                            viewModel.toggleSelection(for: coin.symbol)
-                        },
-                        onTapDetail: {
-                            selectedCoin = coin
-                        }
-                    )
-                    .background(Color(UIColor.systemBackground))
-                    
-                    Divider()
-                }
-            }
-        }
-        .refreshable {
-            showingRefreshConfirmation = true
-        }
-    }
-    
-    private var loadingView: some View {
-        VStack(spacing: 20) {
-            ProgressView()
-                .scaleEffect(1.5)
-            Text("Loading coin data...")
-                .font(.headline)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-    }
-    
     private var timeFormatter: DateFormatter {
         let formatter = DateFormatter()
         formatter.timeStyle = .short
@@ -153,25 +155,26 @@ struct CoinListView: View {
     }
 }
 
-struct SelectedCoinTag: View {
+struct SelectedCoinChip: View {
     let symbol: String
     let onTap: () -> Void
     
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 6) {
+            HStack(spacing: 4) {
                 Text(symbol)
-                    .font(.system(.footnote, design: .rounded))
+                    .font(.footnote)
                     .fontWeight(.medium)
                 
                 Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 14))
-                    .foregroundColor(.white.opacity(0.8))
+                    .font(.caption2)
+                    .fontWeight(.medium)
+                    .symbolRenderingMode(.hierarchical)
             }
+            .foregroundStyle(.white)
             .padding(.horizontal, 12)
             .padding(.vertical, 6)
-            .background(Color.accentColor)
-            .foregroundColor(.white)
+            .background(.tint)
             .clipShape(Capsule())
         }
     }
@@ -185,25 +188,29 @@ struct ProcessingOverlay: View {
         ZStack {
             Color.black.opacity(0.3)
                 .ignoresSafeArea()
+                .transition(.opacity)
             
             VStack(spacing: 16) {
                 ProgressView()
-                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                    .scaleEffect(1.5)
+                    .controlSize(.large)
+                    .tint(.white)
                 
-                Text(title)
-                    .font(.headline)
-                    .foregroundColor(.white)
-                
-                if !detail.isEmpty {
-                    Text(detail)
-                        .font(.subheadline)
-                        .foregroundColor(.white.opacity(0.8))
+                VStack(spacing: 8) {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(.white)
+                    
+                    if !detail.isEmpty {
+                        Text(detail)
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                    }
                 }
             }
-            .padding(30)
-            .background(Color.black.opacity(0.8))
-            .cornerRadius(20)
+            .padding(32)
+            .background(.ultraThinMaterial.opacity(0.9), in: RoundedRectangle(cornerRadius: 16))
+            .transition(.scale.combined(with: .opacity))
         }
     }
 } 

@@ -12,29 +12,23 @@ struct ContentView: View {
     @State private var showingSettings = false
     
     var body: some View {
-        ZStack {
-            CoinListView(settings: settings)
-            
-            // Floating settings button
-            VStack {
-                Spacer()
-                HStack {
-                    Spacer()
-                    Button(action: { showingSettings = true }) {
-                        Image(systemName: "gearshape.fill")
-                            .font(.title2)
-                            .foregroundColor(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Circle().fill(Color.accentColor))
-                            .shadow(radius: 4)
-                    }
-                    .padding()
-                }
+        CoinListView(settings: settings)
+            .sheet(isPresented: $showingSettings) {
+                SettingsView(settings: settings)
             }
-        }
-        .sheet(isPresented: $showingSettings) {
-            SettingsView(settings: settings)
-        }
+            .environment(\.showingSettings, $showingSettings)
+    }
+}
+
+// Environment key for settings sheet
+private struct ShowingSettingsKey: EnvironmentKey {
+    static let defaultValue: Binding<Bool> = .constant(false)
+}
+
+extension EnvironmentValues {
+    var showingSettings: Binding<Bool> {
+        get { self[ShowingSettingsKey.self] }
+        set { self[ShowingSettingsKey.self] = newValue }
     }
 }
 

@@ -13,90 +13,88 @@ struct CoinRowView: View {
     let onTapDetail: () -> Void
     
     var body: some View {
-        HStack(spacing: 0) {
-            // Left side - Selection area
+        HStack(spacing: 16) {
+            // Selection button
             Button(action: onToggleSelection) {
-                HStack(spacing: 12) {
-                    // Selection indicator
-                    if coin.isSelected {
-                        Circle()
-                            .fill(Color.accentColor)
-                            .frame(width: 12, height: 12)
-                    } else {
-                        Circle()
-                            .stroke(Color(.systemGray3), lineWidth: 1.5)
-                            .frame(width: 12, height: 12)
-                    }
-                    
-                    // Symbol
+                Image(systemName: coin.isSelected ? "checkmark.circle.fill" : "circle")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .foregroundStyle(coin.isSelected ? Color.accentColor : .secondary)
+                    .symbolRenderingMode(.monochrome)
+            }
+            .buttonStyle(.plain)
+            
+            // Coin info
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
                     Text(coin.symbol)
                         .font(.headline)
-                        .frame(width: 60, alignment: .leading)
-                }
-                .padding(.leading, 16)
-                .padding(.trailing, 8)
-                .contentShape(Rectangle())
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            // Right side - Detail area
-            Button(action: onTapDetail) {
-                HStack {
-                    // Trades with "trades" label
-                    HStack(spacing: 4) {
-                        Text("\(coin.successfulTrades)")
-                            .font(.caption)
-                            .foregroundColor(.primary)
-                        Text("trades")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .frame(width: 80, alignment: .trailing)
                     
-                    // Min/Max with labels
-                    VStack(alignment: .trailing, spacing: 2) {
-                        HStack(spacing: 4) {
-                            Text(coin.formattedMinPrice)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("min")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                        HStack(spacing: 4) {
-                            Text(coin.formattedMaxPrice)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                            Text("max")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    .frame(width: 110, alignment: .trailing)
+                    Spacer()
                     
-                    // Change percentage with arrow
+                    // Change indicator
                     HStack(spacing: 4) {
                         Image(systemName: coin.changeArrowName)
                             .font(.caption)
+                            .fontWeight(.semibold)
                         Text(coin.formattedChangePercent)
-                            .font(.caption)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
                     }
-                    .foregroundColor(coin.changeColor)
-                    .frame(width: 70, alignment: .trailing)
-                    
-                    // Navigation chevron
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .padding(.trailing, 16)
+                    .foregroundStyle(coin.changeColor)
                 }
-                .contentShape(Rectangle())
+                
+                HStack {
+                    // Trades count
+                    Label {
+                        Text("\(coin.successfulTrades)")
+                            .font(.caption)
+                    } icon: {
+                        Image(systemName: "chart.line.uptrend.xyaxis")
+                            .font(.caption2)
+                    }
+                    .foregroundStyle(.secondary)
+                    
+                    Spacer()
+                    
+                    // Price range
+                    HStack(spacing: 12) {
+                        HStack(spacing: 4) {
+                            Text("Min")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                            Text(coin.formattedMinPrice)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        HStack(spacing: 4) {
+                            Text("Max")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                            Text(coin.formattedMaxPrice)
+                                .font(.caption)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
             }
-            .buttonStyle(PlainButtonStyle())
+            
+            // Navigation chevron
+            Button(action: onTapDetail) {
+                Image(systemName: "chevron.right")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color(.tertiaryLabel))
+            }
+            .buttonStyle(.plain)
         }
-        .padding(.vertical, 8)
-        .background(
-            coin.isSelected ? Color.accentColor.opacity(0.1) : Color(UIColor.systemBackground)
+        .padding(.vertical, 4)
+        .contentShape(Rectangle())
+        .listRowBackground(
+            coin.isSelected ? Color.accentColor.opacity(0.08) : Color.clear
         )
     }
 } 

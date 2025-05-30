@@ -35,67 +35,70 @@ struct CoinDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 24) {
+            VStack(spacing: 20) {
                 // Header
                 headerSection
-                
-                // Price Chart
-                chartSection
+                    .padding(.horizontal)
                 
                 // Time Range Selector
                 timeRangeSelector
+                    .padding(.horizontal)
+                
+                // Price Chart
+                chartSection
+                    .padding(.horizontal)
                 
                 // Statistics
                 statisticsSection
+                    .padding(.horizontal)
                 
                 // Tendencies
                 tendenciesSection
+                    .padding(.horizontal)
             }
-            .padding()
+            .padding(.vertical)
         }
-        .navigationTitle("Coin Details")
+        .navigationTitle(coin.symbol)
         .navigationBarTitleDisplayMode(.large)
+        .background(Color(.systemGroupedBackground))
     }
     
     private var headerSection: some View {
-        VStack(spacing: 8) {
-            HStack {
-                if coin.isSelected {
-                    Circle()
-                        .fill(Color.accentColor)
-                        .frame(width: 20, height: 20)
-                } else {
-                    Circle()
-                        .stroke(Color(.systemGray3), lineWidth: 2)
-                        .frame(width: 20, height: 20)
+        VStack(spacing: 16) {
+            // Price and change
+            VStack(spacing: 8) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text(coin.formattedAvgPrice)
+                        .font(.system(size: 42, weight: .bold, design: .rounded))
+                    Text("USDT")
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
                 }
                 
-                Text(coin.symbol)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                
-                Spacer()
-                
-                Text(coin.formattedChangePercent)
-                    .font(.title2)
-                    .foregroundColor(coin.changeColor)
+                HStack(spacing: 8) {
+                    Image(systemName: coin.changeArrowName)
+                        .font(.body)
+                        .fontWeight(.semibold)
+                    Text(coin.formattedChangePercent)
+                        .font(.title3)
+                        .fontWeight(.semibold)
+                }
+                .foregroundStyle(coin.changeColor)
             }
             
-            HStack {
-                Text("Current: ")
-                    .foregroundColor(.secondary)
-                Text(coin.formattedAvgPrice)
-                    .font(.title3)
-                    .fontWeight(.semibold)
-                Text("USDT")
-                    .foregroundColor(.secondary)
+            // Selection status
+            if coin.isSelected {
+                Label("Selected for monitoring", systemImage: "checkmark.circle.fill")
+                    .font(.footnote)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.tint)
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
+        .frame(maxWidth: .infinity)
     }
     
     private var chartSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Price Chart")
                 .font(.headline)
             
@@ -105,26 +108,47 @@ struct CoinDetailView: View {
                         x: .value("Time", dataPoint.index),
                         y: .value("Price", dataPoint.price)
                     )
+                    .foregroundStyle(coin.changeColor.gradient)
+                    .lineStyle(StrokeStyle(lineWidth: 2.5, lineCap: .round, lineJoin: .round))
+                }
+                
+                if let lastPoint = chartData.last {
+                    PointMark(
+                        x: .value("Time", lastPoint.index),
+                        y: .value("Price", lastPoint.price)
+                    )
                     .foregroundStyle(coin.changeColor)
+                    .symbolSize(100)
                 }
             }
-            .frame(height: 200)
+            .frame(height: 240)
             .chartYScale(domain: chartYDomain)
             .chartXAxis {
                 AxisMarks(values: .automatic(desiredCount: 5)) { value in
                     AxisGridLine()
+                        .foregroundStyle(Color(.systemGray5))
                     AxisValueLabel {
                         if let index = value.as(Int.self) {
                             Text(timeLabel(for: index))
-                                .font(.caption)
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
                         }
                     }
                 }
             }
+            .chartYAxis {
+                AxisMarks(position: .leading) { value in
+                    AxisGridLine()
+                        .foregroundStyle(Color(.systemGray5))
+                    AxisValueLabel()
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
         .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
+        .background(Color(.systemBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 16))
     }
     
     private var timeRangeSelector: some View {
@@ -133,66 +157,118 @@ struct CoinDetailView: View {
                 Text(range.rawValue).tag(range)
             }
         }
-        .pickerStyle(SegmentedPickerStyle())
+        .pickerStyle(.segmented)
     }
     
     private var statisticsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Statistics")
-                .font(.headline)
-            
-            HStack(spacing: 20) {
-                StatisticView(title: "Min", value: coin.formattedMinPrice, color: .red)
-                StatisticView(title: "Avg", value: coin.formattedAvgPrice, color: .orange)
-                StatisticView(title: "Max", value: coin.formattedMaxPrice, color: .green)
+        VStack(spacing: 12) {
+            HStack {
+                Text("Statistics")
+                    .font(.headline)
+                Spacer()
             }
             
-            HStack(spacing: 20) {
-                StatisticView(title: "Trades", value: "\(coin.successfulTrades)", color: coin.tradesTextColor)
-                StatisticView(title: "Grid", value: "\(coin.gridDensity)", color: .blue)
+            VStack(spacing: 12) {
+                // Price statistics
+                HStack(spacing: 12) {
+                    StatCard(
+                        title: "MIN",
+                        value: coin.formattedMinPrice,
+                        icon: "arrow.down.circle.fill",
+                        color: .red
+                    )
+                    
+                    StatCard(
+                        title: "AVG", 
+                        value: coin.formattedAvgPrice,
+                        icon: "minus.circle.fill",
+                        color: .orange
+                    )
+                    
+                    StatCard(
+                        title: "MAX",
+                        value: coin.formattedMaxPrice,
+                        icon: "arrow.up.circle.fill",
+                        color: .green
+                    )
+                }
+                
+                // Trading statistics
+                HStack(spacing: 12) {
+                    StatCard(
+                        title: "TRADES",
+                        value: "\(coin.successfulTrades)",
+                        icon: "chart.line.uptrend.xyaxis.circle.fill",
+                        color: coin.tradesTextColor
+                    )
+                    
+                    StatCard(
+                        title: "GRID DENSITY",
+                        value: "\(coin.gridDensity)",
+                        icon: "square.grid.3x3.fill",
+                        color: .blue
+                    )
+                }
             }
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
     }
     
     private var tendenciesSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Tendencies")
-                .font(.headline)
-            
-            ForEach(TimeRange.allCases, id: \.self) { range in
-                TendencyRow(
-                    timeRange: range.rawValue,
-                    tendency: calculateTendency(for: range),
-                    change: calculateChange(for: range)
-                )
+        VStack(spacing: 12) {
+            HStack {
+                Text("Tendencies")
+                    .font(.headline)
+                Spacer()
             }
+            
+            VStack(spacing: 0) {
+                ForEach(Array(TimeRange.allCases.enumerated()), id: \.element) { index, range in
+                    TendencyRow(
+                        timeRange: range.rawValue,
+                        tendency: calculateTendency(for: range),
+                        change: calculateChange(for: range)
+                    )
+                    
+                    if index < TimeRange.allCases.count - 1 {
+                        Divider()
+                            .padding(.leading, 52)
+                    }
+                }
+            }
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 16))
         }
-        .padding()
-        .background(Color(.systemGray6))
-        .cornerRadius(12)
     }
     
     // MARK: - Helper Views
     
-    private struct StatisticView: View {
+    private struct StatCard: View {
         let title: String
         let value: String
+        let icon: String
         let color: Color
         
         var body: some View {
-            VStack(spacing: 4) {
+            VStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundStyle(color)
+                    .symbolRenderingMode(.hierarchical)
+                
+                Text(value)
+                    .font(.system(.title3, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                
                 Text(title)
                     .font(.caption)
-                    .foregroundColor(.secondary)
-                Text(value)
-                    .font(.system(.body, design: .monospaced))
-                    .fontWeight(.semibold)
-                    .foregroundColor(color)
+                    .fontWeight(.medium)
+                    .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(Color(.systemBackground))
+            .clipShape(RoundedRectangle(cornerRadius: 12))
         }
     }
     
@@ -207,31 +283,50 @@ struct CoinDetailView: View {
             } else if tendency < 0 {
                 return .red
             } else {
-                return .primary
+                return .secondary
+            }
+        }
+        
+        var tendencyIcon: String {
+            if tendency > 0 {
+                return "arrow.up.right.circle.fill"
+            } else if tendency < 0 {
+                return "arrow.down.right.circle.fill"
+            } else {
+                return "arrow.right.circle.fill"
             }
         }
         
         var body: some View {
-            HStack {
+            HStack(spacing: 16) {
+                Image(systemName: tendencyIcon)
+                    .font(.title3)
+                    .foregroundStyle(tendencyColor)
+                    .symbolRenderingMode(.hierarchical)
+                    .frame(width: 28)
+                
                 Text(timeRange)
                     .font(.subheadline)
+                    .fontWeight(.medium)
                     .frame(width: 50, alignment: .leading)
-                
-                HStack(spacing: 4) {
-                    Image(systemName: tendency > 0 ? "arrow.up.right" : tendency < 0 ? "arrow.down.right" : "arrow.right")
-                        .font(.caption)
-                    Text(change)
-                        .font(.caption)
-                }
-                .foregroundColor(tendencyColor)
                 
                 Spacer()
                 
-                ProgressView(value: abs(tendency), total: 10)
-                    .progressViewStyle(LinearProgressViewStyle(tint: tendencyColor))
-                    .frame(width: 100)
+                HStack(spacing: 8) {
+                    ProgressView(value: abs(tendency), total: 10)
+                        .progressViewStyle(.linear)
+                        .tint(tendencyColor)
+                        .frame(width: 80)
+                    
+                    Text(change)
+                        .font(.footnote)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(tendencyColor)
+                        .frame(width: 60, alignment: .trailing)
+                }
             }
-            .padding(.vertical, 4)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
         }
     }
     

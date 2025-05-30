@@ -14,57 +14,137 @@ struct SettingsView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("Grid Trading Parameters") {
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Grid Delta: \(String(format: "%.1f", settings.gridDelta))%", systemImage: "square.grid.3x3")
-                        Slider(value: $settings.gridDelta, in: 0.1...2.0, step: 0.1)
-                            .tint(.blue)
-                        Text("The percentage spacing between grid lines")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                Section {
+                    // Grid Delta
+                    HStack {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Grid Delta")
+                                    .font(.body)
+                                Text("\(String(format: "%.1f", settings.gridDelta))%")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                            }
+                        } icon: {
+                            Image(systemName: "square.grid.3x3")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.tint)
+                                .symbolRenderingMode(.monochrome)
+                                .frame(width: 36)
+                        }
+                        
+                        Spacer()
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 8)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Display Top \(settings.displayTopCoins) Coins", systemImage: "chart.line.uptrend.xyaxis")
-                        Slider(value: Binding(
-                            get: { Double(settings.displayTopCoins) },
-                            set: { settings.displayTopCoins = Int($0) }
-                        ), in: 5...100, step: 5)
-                            .tint(.blue)
-                        Text("Number of coins to display in the list")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                    .padding(.vertical, 4)
+                    Slider(value: $settings.gridDelta, in: 0.1...2.0, step: 0.1)
                     
-                    VStack(alignment: .leading, spacing: 8) {
-                        Label("Critical Threshold: \(String(format: "%.1f", settings.critz))%", systemImage: "exclamationmark.triangle")
-                        Slider(value: $settings.critz, in: 0.5...5.0, step: 0.5)
-                            .tint(.blue)
-                        Text("Threshold for trend indicator colors")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                    Text("The percentage spacing between grid lines")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Grid Trading")
+                }
+                
+                Section {
+                    // Display Top Coins
+                    HStack {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Display Coins")
+                                    .font(.body)
+                                Text("\(settings.displayTopCoins)")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                            }
+                        } icon: {
+                            Image(systemName: "chart.line.uptrend.xyaxis")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.tint)
+                                .symbolRenderingMode(.monochrome)
+                                .frame(width: 36)
+                        }
+                        
+                        Spacer()
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 8)
+                    
+                    Slider(value: Binding(
+                        get: { Double(settings.displayTopCoins) },
+                        set: { settings.displayTopCoins = Int($0) }
+                    ), in: 5...100, step: 5)
+                    
+                    Text("Number of top coins to display in the list")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Display Options")
+                }
+                
+                Section {
+                    // Critical Threshold
+                    HStack {
+                        Label {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Critical Threshold")
+                                    .font(.body)
+                                Text("\(String(format: "%.1f", settings.critz))%")
+                                    .font(.title2)
+                                    .fontWeight(.semibold)
+                                    .foregroundStyle(.primary)
+                            }
+                        } icon: {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .font(.title2)
+                                .fontWeight(.medium)
+                                .foregroundStyle(.orange)
+                                .symbolRenderingMode(.monochrome)
+                                .frame(width: 36)
+                        }
+                        
+                        Spacer()
+                    }
+                    .padding(.vertical, 8)
+                    
+                    Slider(value: $settings.critz, in: 0.5...5.0, step: 0.5)
+                    
+                    Text("Threshold for trend indicator colors")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                } header: {
+                    Text("Indicators")
                 }
                 
                 Section {
                     Button(action: {
                         settings.reset()
                     }) {
-                        Label("Reset to Defaults", systemImage: "arrow.counterclockwise")
-                            .foregroundColor(.red)
+                        HStack {
+                            Spacer()
+                            Label("Reset to Defaults", systemImage: "arrow.counterclockwise")
+                                .fontWeight(.medium)
+                            Spacer()
+                        }
                     }
+                    .foregroundStyle(.red)
+                } footer: {
+                    Text("Reset all settings to their default values")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
                 }
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         dismiss()
                     }
+                    .fontWeight(.semibold)
                 }
             }
         }
