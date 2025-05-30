@@ -1,0 +1,76 @@
+/* Main Navigation */
+"Grid Analyzer" = "Analyseur de Grille";
+"Settings" = "Réglages";
+"Done" = "Terminé";
+
+/* Coin List View */
+"Loading coin data..." = "Chargement des données...";
+"Updated %@" = "Mis à jour %@";
+"Refresh Data?" = "Actualiser les données ?";
+"This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete." = "Cela récupérera de nouvelles données depuis l'API Binance.\n\nCe processus peut prendre jusqu'à 1 minute.";
+"Cancel" = "Annuler";
+"Refresh" = "Actualiser";
+"Error" = "Erreur";
+"OK" = "OK";
+"Unselect Coin?" = "Désélectionner la crypto ?";
+"Do you want to unselect %@?" = "Voulez-vous désélectionner %@ ?";
+"Unselect" = "Désélectionner";
+
+/* Settings View */
+"Grid Trading" = "Trading en Grille";
+"Grid Delta" = "Delta de Grille";
+"The percentage spacing between grid lines" = "L'espacement en pourcentage entre les lignes de grille";
+"Display Options" = "Options d'affichage";
+"Display Coins" = "Cryptos affichées";
+"Number of top coins to display in the list" = "Nombre de cryptos principales à afficher dans la liste";
+"Indicators" = "Indicateurs";
+"Critical Threshold" = "Seuil critique";
+"Threshold for trend indicator colors" = "Seuil pour les couleurs des indicateurs de tendance";
+"Reset to Defaults" = "Réinitialiser";
+"Reset all settings to their default values" = "Réinitialiser tous les réglages à leurs valeurs par défaut";
+
+/* Coin Detail View */
+"24h Volume" = "Volume 24h";
+"Current Price" = "Prix actuel";
+"24h Change" = "Variation 24h";
+"24h High" = "Plus haut 24h";
+"24h Low" = "Plus bas 24h";
+"Grid Analysis" = "Analyse de Grille";
+"Price Range" = "Plage de prix";
+"Grid Lines" = "Lignes de grille";
+"Indicators" = "Indicateurs";
+"Short Term" = "Court terme";
+"Long Term" = "Long terme";
+"Trend" = "Tendance";
+"Below Price" = "Sous le prix";
+"Above Price" = "Au-dessus du prix";
+"Total Grids" = "Total des grilles";
+"Price Chart" = "Graphique des prix";
+"Statistics" = "Statistiques";
+"Tendencies" = "Tendances";
+"Selected for monitoring" = "Sélectionné pour surveillance";
+"MIN" = "MIN";
+"AVG" = "MOY";
+"MAX" = "MAX";
+"TRADES" = "TRADES";
+"GRID DENSITY" = "DENSITÉ DE GRILLE";
+
+/* Coin Row View */
+"Min" = "Min";
+"Max" = "Max";
+
+/* Chart View */
+"1h" = "1h";
+"4h" = "4h";
+"1d" = "1j";
+"1w" = "1s";
+"No data available" = "Aucune donnée disponible";
+
+/* Processing Messages */
+"Processing" = "Traitement";
+"Fetching market data..." = "Récupération des données du marché...";
+"Calculating indicators..." = "Calcul des indicateurs...";
+"Analyzing %d coins..." = "Analyse de %d cryptos...";
+"Refreshing Data" = "Actualisation des données";
+"Processing Data" = "Traitement des données";
+"Preparing display..." = "Préparation de l'affichage..."; 

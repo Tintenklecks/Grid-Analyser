@@ -1,0 +1,76 @@
+/* Main Navigation */
+"Grid Analyzer" = "网格分析器";
+"Settings" = "设置";
+"Done" = "完成";
+
+/* Coin List View */
+"Loading coin data..." = "正在加载币种数据...";
+"Updated %@" = "更新于 %@";
+"Refresh Data?" = "刷新数据？";
+"This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete." = "这将从币安API获取最新数据。\n\n此过程可能需要1分钟完成。";
+"Cancel" = "取消";
+"Refresh" = "刷新";
+"Error" = "错误";
+"OK" = "确定";
+"Unselect Coin?" = "取消选择币种？";
+"Do you want to unselect %@?" = "您要取消选择 %@ 吗？";
+"Unselect" = "取消选择";
+
+/* Settings View */
+"Grid Trading" = "网格交易";
+"Grid Delta" = "网格间距";
+"The percentage spacing between grid lines" = "网格线之间的百分比间距";
+"Display Options" = "显示选项";
+"Display Coins" = "显示币种";
+"Number of top coins to display in the list" = "列表中显示的顶级币种数量";
+"Indicators" = "指标";
+"Critical Threshold" = "临界阈值";
+"Threshold for trend indicator colors" = "趋势指标颜色的阈值";
+"Reset to Defaults" = "恢复默认设置";
+"Reset all settings to their default values" = "将所有设置恢复为默认值";
+
+/* Coin Detail View */
+"24h Volume" = "24小时成交量";
+"Current Price" = "当前价格";
+"24h Change" = "24小时涨跌";
+"24h High" = "24小时最高";
+"24h Low" = "24小时最低";
+"Grid Analysis" = "网格分析";
+"Price Range" = "价格范围";
+"Grid Lines" = "网格线";
+"Indicators" = "指标";
+"Short Term" = "短期";
+"Long Term" = "长期";
+"Trend" = "趋势";
+"Below Price" = "低于价格";
+"Above Price" = "高于价格";
+"Total Grids" = "总网格数";
+"Price Chart" = "价格图表";
+"Statistics" = "统计数据";
+"Tendencies" = "趋势";
+"Selected for monitoring" = "已选择监控";
+"MIN" = "最低";
+"AVG" = "平均";
+"MAX" = "最高";
+"TRADES" = "交易";
+"GRID DENSITY" = "网格密度";
+
+/* Coin Row View */
+"Min" = "最低";
+"Max" = "最高";
+
+/* Chart View */
+"1h" = "1小时";
+"4h" = "4小时";
+"1d" = "1天";
+"1w" = "1周";
+"No data available" = "暂无数据";
+
+/* Processing Messages */
+"Processing" = "处理中";
+"Fetching market data..." = "正在获取市场数据...";
+"Calculating indicators..." = "正在计算指标...";
+"Analyzing %d coins..." = "正在分析 %d 个币种...";
+"Refreshing Data" = "刷新数据";
+"Processing Data" = "处理数据";
+"Preparing display..." = "正在准备显示..."; 

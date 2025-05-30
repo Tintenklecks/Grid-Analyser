@@ -10,22 +10,9 @@
 		AA8F96AF2DE71A0A00620BC8 /* Grid Analyzer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Grid Analyzer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		AA8F97242DE9A6CC00620BC8 /* Exceptions for "Grid Analyzer" folder in "Grid Analyzer" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				"Grid-Analyzer-Info.plist",
-			);
-			target = AA8F96AE2DE71A0A00620BC8 /* Grid Analyzer */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		AA8F96B12DE71A0A00620BC8 /* Grid Analyzer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				AA8F97242DE9A6CC00620BC8 /* Exceptions for "Grid Analyzer" folder in "Grid Analyzer" target */,
-			);
 			path = "Grid Analyzer";
 			sourceTree = "<group>";
 		};
@@ -104,6 +91,10 @@
 			knownRegions = (
 				en,
 				Base,
+				de,
+				"zh-Hans",
+				es,
+				fr,
 			);
 			mainGroup = AA8F96A62DE71A0A00620BC8;
 			minimizedProjectReferenceProxies = 1;

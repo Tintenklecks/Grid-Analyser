@@ -19,7 +19,7 @@ struct SettingsView: View {
                     HStack {
                         Label {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Grid Delta")
+                                Text("Grid Delta".localized)
                                     .font(.body)
                                 Text("\(String(format: "%.1f", settings.gridDelta))%")
                                     .font(.title2)
@@ -41,11 +41,11 @@ struct SettingsView: View {
                     
                     Slider(value: $settings.gridDelta, in: 0.1...2.0, step: 0.1)
                     
-                    Text("The percentage spacing between grid lines")
+                    Text("The percentage spacing between grid lines".localized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } header: {
-                    Text("Grid Trading")
+                    Text("Grid Trading".localized)
                 }
                 
                 Section {
@@ -53,7 +53,7 @@ struct SettingsView: View {
                     HStack {
                         Label {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Display Coins")
+                                Text("Display Coins".localized)
                                     .font(.body)
                                 Text("\(settings.displayTopCoins)")
                                     .font(.title2)
@@ -78,11 +78,11 @@ struct SettingsView: View {
                         set: { settings.displayTopCoins = Int($0) }
                     ), in: 5...100, step: 5)
                     
-                    Text("Number of top coins to display in the list")
+                    Text("Number of top coins to display in the list".localized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } header: {
-                    Text("Display Options")
+                    Text("Display Options".localized)
                 }
                 
                 Section {
@@ -90,7 +90,7 @@ struct SettingsView: View {
                     HStack {
                         Label {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Critical Threshold")
+                                Text("Critical Threshold".localized)
                                     .font(.body)
                                 Text("\(String(format: "%.1f", settings.critz))%")
                                     .font(.title2)
@@ -112,11 +112,11 @@ struct SettingsView: View {
                     
                     Slider(value: $settings.critz, in: 0.5...5.0, step: 0.5)
                     
-                    Text("Threshold for trend indicator colors")
+                    Text("Threshold for trend indicator colors".localized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 } header: {
-                    Text("Indicators")
+                    Text("Indicators".localized)
                 }
                 
                 Section {
@@ -125,23 +125,23 @@ struct SettingsView: View {
                     }) {
                         HStack {
                             Spacer()
-                            Label("Reset to Defaults", systemImage: "arrow.counterclockwise")
+                            Label("Reset to Defaults".localized, systemImage: "arrow.counterclockwise")
                                 .fontWeight(.medium)
                             Spacer()
                         }
                     }
                     .foregroundStyle(.red)
                 } footer: {
-                    Text("Reset all settings to their default values")
+                    Text("Reset all settings to their default values".localized)
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }
             }
-            .navigationTitle("Settings")
+            .navigationTitle("Settings".localized)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
+                    Button("Done".localized) {
                         dismiss()
                     }
                     .fontWeight(.semibold)

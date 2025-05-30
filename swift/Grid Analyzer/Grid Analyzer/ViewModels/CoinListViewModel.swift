@@ -108,7 +108,7 @@ final class CoinListViewModel: ObservableObject {
     private func performDataFetch() async {
         isLoading = true
         isProcessing = true
-        progressTitle = "Refreshing Data"
+        progressTitle = "Refreshing Data".localized
         errorMessage = nil
         
         // Clear any existing error
@@ -158,8 +158,8 @@ final class CoinListViewModel: ObservableObject {
         }
         
         isProcessing = true
-        progressTitle = "Processing Data"
-        progressDetail = "Preparing display..."
+        progressTitle = "Processing Data".localized
+        progressDetail = "Preparing display...".localized
         
         // If grid spacing changed, we need to recalculate
         let needsRecalculation = abs(container.gridSpacing - settings.gridDelta) > 0.01

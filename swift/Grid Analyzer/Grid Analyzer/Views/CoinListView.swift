@@ -49,7 +49,7 @@ struct CoinListView: View {
                             Spacer()
                             VStack(spacing: 16) {
                                 ProgressView()
-                                Text("Loading coin data...")
+                                Text("Loading coin data...".localized)
                                     .font(.subheadline)
                                     .foregroundStyle(.secondary)
                             }
@@ -72,7 +72,7 @@ struct CoinListView: View {
                     }
                 } header: {
                     if let lastUpdate = viewModel.lastUpdateTime {
-                        Text("Updated \(lastUpdate, formatter: timeFormatter)")
+                        Text("Updated %@".localized(with: lastUpdate.formatted(date: .omitted, time: .shortened)))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .textCase(nil)
@@ -80,7 +80,7 @@ struct CoinListView: View {
                 }
             }
             .listStyle(.insetGrouped)
-            .navigationTitle("Grid Analyzer")
+            .navigationTitle("Grid Analyzer".localized)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     HStack(spacing: 16) {
@@ -106,8 +106,8 @@ struct CoinListView: View {
         .task {
             await viewModel.loadData()
         }
-        .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-            Button("OK") {
+        .alert("Error".localized, isPresented: .constant(viewModel.errorMessage != nil)) {
+            Button("OK".localized) {
                 viewModel.clearError()
             }
         } message: {
@@ -115,26 +115,26 @@ struct CoinListView: View {
                 Text(error)
             }
         }
-        .alert("Refresh Data?", isPresented: $showingRefreshConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Refresh") {
+        .alert("Refresh Data?".localized, isPresented: $showingRefreshConfirmation) {
+            Button("Cancel".localized, role: .cancel) { }
+            Button("Refresh".localized) {
                 Task {
                     await viewModel.refreshData()
                 }
             }
         } message: {
-            Text("This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete.")
+            Text("This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete.".localized)
         }
-        .alert("Unselect Coin?", isPresented: $showingUnselectConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Unselect", role: .destructive) {
+        .alert("Unselect Coin?".localized, isPresented: $showingUnselectConfirmation) {
+            Button("Cancel".localized, role: .cancel) { }
+            Button("Unselect".localized, role: .destructive) {
                 if let symbol = coinToUnselect {
                     viewModel.toggleSelection(for: symbol)
                 }
             }
         } message: {
             if let symbol = coinToUnselect {
-                Text("Do you want to unselect \(symbol)?")
+                Text("Do you want to unselect %@?".localized(with: symbol))
             }
         }
         .overlay {

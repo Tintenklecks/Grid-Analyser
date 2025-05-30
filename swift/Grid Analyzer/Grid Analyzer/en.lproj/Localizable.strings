@@ -1,0 +1,76 @@
+/* Main Navigation */
+"Grid Analyzer" = "Grid Analyzer";
+"Settings" = "Settings";
+"Done" = "Done";
+
+/* Coin List View */
+"Loading coin data..." = "Loading coin data...";
+"Updated %@" = "Updated %@";
+"Refresh Data?" = "Refresh Data?";
+"This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete." = "This will fetch fresh data from Binance API.\n\nThis process may take up to 1 minute to complete.";
+"Cancel" = "Cancel";
+"Refresh" = "Refresh";
+"Error" = "Error";
+"OK" = "OK";
+"Unselect Coin?" = "Unselect Coin?";
+"Do you want to unselect %@?" = "Do you want to unselect %@?";
+"Unselect" = "Unselect";
+
+/* Settings View */
+"Grid Trading" = "Grid Trading";
+"Grid Delta" = "Grid Delta";
+"The percentage spacing between grid lines" = "The percentage spacing between grid lines";
+"Display Options" = "Display Options";
+"Display Coins" = "Display Coins";
+"Number of top coins to display in the list" = "Number of top coins to display in the list";
+"Indicators" = "Indicators";
+"Critical Threshold" = "Critical Threshold";
+"Threshold for trend indicator colors" = "Threshold for trend indicator colors";
+"Reset to Defaults" = "Reset to Defaults";
+"Reset all settings to their default values" = "Reset all settings to their default values";
+
+/* Coin Detail View */
+"24h Volume" = "24h Volume";
+"Current Price" = "Current Price";
+"24h Change" = "24h Change";
+"24h High" = "24h High";
+"24h Low" = "24h Low";
+"Grid Analysis" = "Grid Analysis";
+"Price Range" = "Price Range";
+"Grid Lines" = "Grid Lines";
+"Indicators" = "Indicators";
+"Short Term" = "Short Term";
+"Long Term" = "Long Term";
+"Trend" = "Trend";
+"Below Price" = "Below Price";
+"Above Price" = "Above Price";
+"Total Grids" = "Total Grids";
+"Price Chart" = "Price Chart";
+"Statistics" = "Statistics";
+"Tendencies" = "Tendencies";
+"Selected for monitoring" = "Selected for monitoring";
+"MIN" = "MIN";
+"AVG" = "AVG";
+"MAX" = "MAX";
+"TRADES" = "TRADES";
+"GRID DENSITY" = "GRID DENSITY";
+
+/* Coin Row View */
+"Min" = "Min";
+"Max" = "Max";
+
+/* Chart View */
+"1h" = "1h";
+"4h" = "4h";
+"1d" = "1d";
+"1w" = "1w";
+"No data available" = "No data available";
+
+/* Processing Messages */
+"Processing" = "Processing";
+"Fetching market data..." = "Fetching market data...";
+"Calculating indicators..." = "Calculating indicators...";
+"Analyzing %d coins..." = "Analyzing %d coins...";
+"Refreshing Data" = "Refreshing Data";
+"Processing Data" = "Processing Data";
+"Preparing display..." = "Preparing display..."; 

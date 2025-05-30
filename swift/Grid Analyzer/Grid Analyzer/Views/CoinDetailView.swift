@@ -88,7 +88,7 @@ struct CoinDetailView: View {
             
             // Selection status
             if coin.isSelected {
-                Label("Selected for monitoring", systemImage: "checkmark.circle.fill")
+                Label("Selected for monitoring".localized, systemImage: "checkmark.circle.fill")
                     .font(.footnote)
                     .fontWeight(.medium)
                     .foregroundStyle(.tint)
@@ -99,7 +99,7 @@ struct CoinDetailView: View {
     
     private var chartSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Price Chart")
+            Text("Price Chart".localized)
                 .font(.headline)
             
             Chart {
@@ -163,7 +163,7 @@ struct CoinDetailView: View {
     private var statisticsSection: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Statistics")
+                Text("Statistics".localized)
                     .font(.headline)
                 Spacer()
             }
@@ -172,21 +172,21 @@ struct CoinDetailView: View {
                 // Price statistics
                 HStack(spacing: 12) {
                     StatCard(
-                        title: "MIN",
+                        title: "MIN".localized,
                         value: coin.formattedMinPrice,
                         icon: "arrow.down.circle.fill",
                         color: .red
                     )
                     
                     StatCard(
-                        title: "AVG", 
+                        title: "AVG".localized, 
                         value: coin.formattedAvgPrice,
                         icon: "minus.circle.fill",
                         color: .orange
                     )
                     
                     StatCard(
-                        title: "MAX",
+                        title: "MAX".localized,
                         value: coin.formattedMaxPrice,
                         icon: "arrow.up.circle.fill",
                         color: .green
@@ -196,14 +196,14 @@ struct CoinDetailView: View {
                 // Trading statistics
                 HStack(spacing: 12) {
                     StatCard(
-                        title: "TRADES",
+                        title: "TRADES".localized,
                         value: "\(coin.successfulTrades)",
                         icon: "chart.line.uptrend.xyaxis.circle.fill",
                         color: coin.tradesTextColor
                     )
                     
                     StatCard(
-                        title: "GRID DENSITY",
+                        title: "GRID DENSITY".localized,
                         value: "\(coin.gridDensity)",
                         icon: "square.grid.3x3.fill",
                         color: .blue
@@ -216,7 +216,7 @@ struct CoinDetailView: View {
     private var tendenciesSection: some View {
         VStack(spacing: 12) {
             HStack {
-                Text("Tendencies")
+                Text("Tendencies".localized)
                     .font(.headline)
                 Spacer()
             }

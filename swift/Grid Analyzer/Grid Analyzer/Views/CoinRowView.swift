@@ -60,7 +60,7 @@ struct CoinRowView: View {
                     // Price range
                     HStack(spacing: 12) {
                         HStack(spacing: 4) {
-                            Text("Min")
+                            Text("Min".localized)
                                 .font(.caption2)
                                 .foregroundStyle(.tertiary)
                             Text(coin.formattedMinPrice)
@@ -70,7 +70,7 @@ struct CoinRowView: View {
                         }
                         
                         HStack(spacing: 4) {
-                            Text("Max")
+                            Text("Max".localized)
                                 .font(.caption2)
                                 .foregroundStyle(.tertiary)
                             Text(coin.formattedMaxPrice)
