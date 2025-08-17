@@ -1,0 +1,33 @@
+Grid Analyzer – Discover the Best Coins for Grid Trading
+
+Grid trading works best when you know where it works. Grid Analyzer shows you exactly that.
+
+This is the first app built specifically to find the coins with the most profitable trade zones — for your chosen grid spacing. Whether you’re already running a grid bot or just planning one, Grid Analyzer tells you which coins historically delivered the most trades within your setup.
+
+Why You Need Grid Analyzer
+
+Most apps show prices. Grid Analyzer shows opportunity.
+
+Instead of guessing which coins fit your strategy, it calculates and ranks them for you — using real data, smart logic, and a customizable grid width. It’s the missing tool every grid trader has been waiting for.
+
+What You Can Do:
+- Find the Top Grid Bot Candidates: Automatically identifies which coins yield the most trades for your selected grid spacing.
+- See Structured Trade Insights: Explore grid density, trade counts, volatility zones, and more — instantly calculated and visualized.
+- On-Demand Data Refresh: Pull to refresh when you want. No background API calls, no quota waste.
+- Offline-First Analysis: Data is saved locally. Launch fast, analyze anytime — even offline.
+- Fully Customizable Strategy: Tune your grid width and filters. Analyze deeper, trade smarter.
+- Feels Right at Home on iOS: Clean, Apple-style design with smooth interactions and material effects
+
+---------------
+
+Grid Analyzer doesn’t just show charts — it shows answers.
+
+Stop guessing. Start optimizing.
+
+Download now and take the guesswork out of grid trading.
+
+
+!!! This app provides analysis tools only and does not constitute financial advice. Always do your own research !!!
+
+
+

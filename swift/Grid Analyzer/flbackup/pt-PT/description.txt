@@ -1,0 +1,33 @@
+Grid Analyzer – Descubra as melhores moedas para Grid Trading
+
+O grid trading funciona melhor quando você sabe onde aplicá-lo. O Grid Analyzer mostra exatamente isso.
+
+Este é o primeiro aplicativo criado especificamente para encontrar as moedas com as zonas de negociação mais lucrativas — para o espaçamento de grade que você escolher. Seja você já operando um grid bot ou apenas planejando um, o Grid Analyzer mostra quais moedas historicamente geraram mais operações com sua configuração.
+
+Por que você precisa do Grid Analyzer
+
+A maioria dos aplicativos mostra preços. O Grid Analyzer mostra oportunidades.
+
+Em vez de adivinhar quais moedas se encaixam na sua estratégia, ele calcula e classifica para você — usando dados reais, lógica inteligente e uma largura de grade personalizável. É a ferramenta que faltava para todo grid trader.
+
+O que você pode fazer:
+- Encontre as melhores moedas para grid bot: Identifica automaticamente quais moedas geram mais operações para o espaçamento de grade selecionado.
+- Veja insights estruturados de negociação: Explore densidade de grade, contagem de operações, zonas de volatilidade e mais — tudo calculado e visualizado instantaneamente.
+- Atualização de dados sob demanda: Puxe para atualizar quando quiser. Sem chamadas de API em segundo plano, sem desperdício de cota.
+- Análise offline-first: Os dados são salvos localmente. Inicialização rápida, análise a qualquer momento — mesmo offline.
+- Estratégia totalmente personalizável: Ajuste a largura da grade e os filtros. Analise mais a fundo, negocie de forma mais inteligente.
+- Design ao estilo Apple: Interface limpa, interações suaves e efeitos de material, perfeitamente integrado ao iOS.
+
+---------------
+
+O Grid Analyzer não mostra apenas gráficos — mostra respostas.
+
+Pare de adivinhar. Comece a otimizar.
+
+Baixe agora e elimine as dúvidas do grid trading.
+
+!!! Este aplicativo fornece apenas ferramentas de análise e não constitui aconselhamento financeiro. Sempre faça sua própria pesquisa !!!
+
+
+
+

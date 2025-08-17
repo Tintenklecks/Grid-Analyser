@@ -1,0 +1,8 @@
+app_identifier("de.IBMobile.Grid-Analyzer") # The bundle identifier of your app
+apple_id("ibmobile@puco.de") # Your Apple Developer Portal username
+
+itc_team_id("283581") # App Store Connect Team ID
+team_id("KT43342F9W") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile

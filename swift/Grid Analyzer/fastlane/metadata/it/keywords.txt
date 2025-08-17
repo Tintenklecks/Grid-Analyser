@@ -1,0 +1,1 @@
+grid,trading,crypto,analisi,gridbot,bot,analizzatore di monete,bitcoin,altcoin,strumenti crypto

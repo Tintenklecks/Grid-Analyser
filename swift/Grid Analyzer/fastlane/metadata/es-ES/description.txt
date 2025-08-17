@@ -1,0 +1,32 @@
+Grid Analyzer – Descubre las mejores monedas para el Grid Trading
+
+El grid trading funciona mejor cuando sabes dónde aplicarlo. Grid Analyzer te lo muestra exactamente.
+
+Esta es la primera app creada específicamente para encontrar las monedas con las zonas de trading más rentables — según el espaciado de la cuadrícula que elijas. Ya sea que ya estés usando un grid bot o solo estés planeando uno, Grid Analyzer te dice qué monedas han generado históricamente más operaciones con tu configuración.
+
+Por qué necesitas Grid Analyzer
+
+La mayoría de las apps muestran precios. Grid Analyzer muestra oportunidades.
+
+En lugar de adivinar qué monedas se adaptan a tu estrategia, las calcula y clasifica por ti — usando datos reales, lógica inteligente y un ancho de cuadrícula personalizable. Es la herramienta que todo grid trader estaba esperando.
+
+Qué puedes hacer:
+- Encuentra las mejores monedas para grid bot: Identifica automáticamente qué monedas generan más operaciones para el espaciado de cuadrícula seleccionado.
+- Consulta análisis estructurados de operaciones: Explora densidad de cuadrícula, recuento de operaciones, zonas de volatilidad y más — todo calculado y visualizado al instante.
+- Actualización de datos bajo demanda: Desliza para actualizar cuando quieras. Sin llamadas API en segundo plano, sin desperdicio de cuota.
+- Análisis offline-first: Los datos se guardan localmente. Inicio rápido, análisis en cualquier momento — incluso sin conexión.
+- Estrategia totalmente personalizable: Ajusta el ancho de la cuadrícula y los filtros. Analiza en profundidad, opera de forma más inteligente.
+- Diseño al estilo Apple: Interfaz limpia, interacciones fluidas y efectos de material, perfectamente integrado en iOS.
+
+---------------
+
+Grid Analyzer no solo muestra gráficos — muestra respuestas.
+
+Deja de adivinar. Empieza a optimizar.
+
+Descárgalo ahora y elimina las dudas del grid trading.
+
+!!! Esta app solo proporciona herramientas de análisis y no constituye asesoramiento financiero. ¡Haz siempre tu propia investigación !!!
+
+
+
