@@ -72,7 +72,7 @@ struct CoinListView: View {
                     }
                 } header: {
                     if let lastUpdate = viewModel.lastUpdateTime {
-                        Text("Updated %@".localized(with: lastUpdate.formatted(date: .omitted, time: .shortened)))
+                        Text("Updated %@".localized(with: formattedUpdateText(lastUpdate)))
                             .font(.caption)
                             .foregroundStyle(.secondary)
                             .textCase(nil)
@@ -152,6 +152,14 @@ struct CoinListView: View {
         formatter.timeStyle = .short
         formatter.dateStyle = .none
         return formatter
+    }
+
+    private func formattedUpdateText(_ date: Date) -> String {
+        if Calendar.current.isDateInToday(date) {
+            return date.formatted(date: .omitted, time: .shortened)
+        } else {
+            return date.formatted(date: .abbreviated, time: .shortened)
+        }
     }
 }
 
