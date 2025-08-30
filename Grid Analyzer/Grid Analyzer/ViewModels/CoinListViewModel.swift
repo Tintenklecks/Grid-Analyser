@@ -162,7 +162,7 @@ final class CoinListViewModel: ObservableObject {
         progressDetail = "Preparing display...".localized
         
         // If grid spacing changed, we need to recalculate
-        let needsRecalculation = abs(container.gridSpacing - settings.gridDelta) > 0.01
+        let needsRecalculation = container.gridSpacing != settings.gridDelta
         
         if needsRecalculation {
             // Need to recalculate with new grid spacing
